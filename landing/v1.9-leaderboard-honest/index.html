@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>clawkin — lives in your statusline</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #000;
+    --bg-card: #0a0a0a;
+    --fg: #e7e7e7;
+    --dim: #6a6a6a;
+    --dim2: #3d3d3d;
+    --rule: #2a2a2a;
+    --hi: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'JetBrains Mono', 'Menlo', 'Consolas', monospace;
+    margin: 0; padding: 0;
+    -webkit-font-smoothing: antialiased;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  nav {
+    border-bottom: 1px dashed var(--rule);
+    padding: 16px 5vw;
+  }
+  .nav-inner {
+    max-width: 880px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: var(--dim);
+  }
+  .brand { color: var(--hi); font-weight: 500; letter-spacing: 0.5px; }
+  .brand .version { color: var(--dim); margin-left: 8px; font-weight: 400; }
+  .nav-links { display: flex; gap: 20px; }
+  .nav-links a {
+    color: var(--dim);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 2px;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .nav-links a:hover { color: var(--hi); border-bottom-color: var(--dim); }
+
+  body { min-height: 100vh; }
+  .wrap {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 8vh 5vw 6vh;
+  }
+
+  /* Hero with breathing pet */
+  .hero {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 48px;
+    margin: 0 0 30px;
+  }
+  .hero h1 {
+    flex: 1;
+    max-width: 620px;
+    font-size: clamp(24px, 3.6vw, 36px);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+    margin: 0;
+    color: var(--hi);
+  }
+  .hero h1 span.line { display: block; }
+  .hero h1 span.line.last { color: var(--fg); font-weight: 500; }
+
+  .hero-pet {
+    margin: 0;
+    padding-top: 6px;
+    color: var(--hi);
+    font-family: inherit;
+    font-size: 11px;
+    line-height: 1;
+    letter-spacing: 1.5px;
+    flex-shrink: 0;
+    white-space: pre;
+    animation: breathe 3.2s ease-in-out infinite;
+    transform-origin: center center;
+    user-select: none;
+  }
+  @keyframes breathe {
+    0%, 100% { opacity: 0.82; transform: scale(1); }
+    50%      { opacity: 1;    transform: scale(1.028); }
+  }
+
+  /* Install bar */
+  .install-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    padding: 13px 16px;
+    margin: 0;
+    font-size: 14px;
+    max-width: 520px;
+  }
+  .install-bar .dollar { color: var(--dim); user-select: none; }
+  .install-bar code {
+    font-family: inherit;
+    color: var(--hi);
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .install-bar .caret {
+    display: inline-block;
+    width: 0.55ch;
+    height: 1em;
+    background: var(--fg);
+    vertical-align: -2px;
+    animation: blink 1s steps(1) infinite;
+    margin-left: -10px;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  .copy-btn {
+    background: transparent;
+    color: var(--dim);
+    border: 1px solid var(--rule);
+    padding: 5px 12px;
+    border-radius: 3px;
+    font-family: inherit;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+    flex-shrink: 0;
+  }
+  .copy-btn:hover { color: var(--hi); border-color: var(--dim); }
+  .copy-btn.copied { color: var(--hi); border-color: var(--hi); }
+
+  /* Window mockup, standalone */
+  .demo-standalone {
+    margin-top: 28px;
+  }
+  .window {
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    overflow: hidden;
+    max-width: 100%;
+  }
+  .window-chrome {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 14px;
+    background: #070707;
+    border-bottom: 1px solid var(--rule);
+  }
+  .window-chrome .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .window-chrome .dot.r { background: #ff5f57; }
+  .window-chrome .dot.y { background: #febc2e; }
+  .window-chrome .dot.g { background: #28c840; }
+  .window-chrome .title {
+    flex: 1; text-align: center;
+    color: var(--dim); font-size: 12px; letter-spacing: 0.5px;
+  }
+  .window-body {
+    padding: 18px 20px 10px;
+    font-size: 13.5px;
+    line-height: 1.75;
+    min-height: 240px;
+  }
+  .window-body .prompt { color: var(--dim); }
+  .window-body .muted { color: var(--dim); }
+  .window-body .hi { color: var(--hi); }
+  .pet-mock {
+    font-size: 12px; line-height: 1; color: var(--hi);
+    letter-spacing: 1px; display: inline-block; margin: 4px 0;
+  }
+  .statusline {
+    padding: 9px 16px;
+    background: #030303;
+    border-top: 1px solid var(--rule);
+    color: var(--hi);
+    font-size: 12.5px;
+    letter-spacing: 1.2px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .statusline .left { display: flex; align-items: center; gap: 10px; }
+  .statusline .ctx { color: var(--dim); letter-spacing: 0.8px; }
+
+  /* Labeled section (leaderboard) */
+  .section {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 36px;
+    padding: 28px 0;
+    border-top: 1px dashed var(--rule);
+    margin-top: 0;
+  }
+  .section-label {
+    color: var(--dim);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 500;
+    padding-top: 4px;
+    user-select: none;
+  }
+  .section-label::before {
+    content: '';
+    display: inline-block;
+    width: 10px;
+    height: 1px;
+    background: var(--dim2);
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+
+  /* Leaderboard teaser */
+  .lead-table {
+    display: grid;
+    gap: 2px;
+    margin: 0;
+  }
+  .lead-row {
+    display: grid;
+    grid-template-columns: 60px 140px 1fr auto;
+    gap: 16px;
+    padding: 7px 0;
+    align-items: baseline;
+    font-size: 13px;
+  }
+  .lead-row + .lead-row { border-top: 1px dashed var(--rule); }
+  .lead-level { color: var(--hi); font-weight: 600; }
+  .lead-user { color: var(--fg); }
+  .lead-title { color: var(--dim); }
+  .lead-meta { color: var(--dim); font-size: 12px; }
+
+  /* Undiscovered rows */
+  .lead-row.undiscovered { opacity: 0.42; }
+  .lead-row.undiscovered .lead-user { font-style: italic; }
+  .lead-row.first-undiscovered { border-top-style: solid; border-top-color: var(--rule); margin-top: 6px; padding-top: 13px; }
+
+  .lead-hint {
+    color: var(--dim);
+    font-size: 12px;
+    margin-top: 12px;
+    line-height: 1.65;
+  }
+  .lead-pricing {
+    display: block;
+    margin-top: 10px;
+    color: var(--fg);
+  }
+  .lead-pricing strong {
+    color: var(--hi);
+    font-weight: 500;
+  }
+
+  /* Pact block — no wrapping section label, no bullets */
+  .pact-block {
+    padding: 28px 0;
+    border-top: 1px dashed var(--rule);
+  }
+  .dual-bare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+  }
+  .dual-bare h3 {
+    color: var(--dim);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin: 0 0 16px;
+  }
+  .dual-bare p {
+    color: var(--fg);
+    line-height: 1.55;
+    margin: 0 0 14px;
+    font-size: 14px;
+    max-width: 34ch;
+  }
+  .dual-bare p:last-child { margin-bottom: 0; }
+  .dual-bare .col-left h3 { color: var(--hi); }
+  .dual-bare .col-left p { color: var(--hi); }
+
+  /* Footer */
+  footer {
+    margin-top: 20px;
+    padding: 22px 0;
+    border-top: 1px dashed var(--rule);
+    color: var(--dim);
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    align-items: center;
+  }
+  footer a { color: var(--dim); text-decoration: none; border-bottom: 1px solid var(--rule); padding-bottom: 1px; }
+  footer a:hover { color: var(--hi); border-bottom-color: var(--dim); }
+  footer .spacer { flex: 1; }
+
+  .hidden { display: none; }
+  .fadein { animation: fadein 0.35s ease-out both; }
+  @keyframes fadein { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: none; } }
+
+  @media (max-width: 680px) {
+    body { font-size: 13px; }
+    .wrap { padding: 5vh 4vw 4vh; }
+    .hero { flex-direction: column; gap: 18px; }
+    .hero h1 { font-size: 22px; max-width: 100%; }
+    .hero-pet { font-size: 10px; align-self: flex-start; padding-top: 0; }
+    .section {
+      grid-template-columns: 1fr;
+      gap: 14px;
+      padding: 24px 0;
+    }
+    .section-label { padding-top: 0; }
+    .dual-bare {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .lead-row {
+      grid-template-columns: 50px 1fr;
+      gap: 8px;
+    }
+    .lead-row .lead-title, .lead-row .lead-meta {
+      grid-column: 2;
+      font-size: 12px;
+    }
+    .install-bar { font-size: 13px; }
+    .copy-btn { padding: 4px 8px; font-size: 10px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-pet { animation: none; opacity: 1; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="brand">clawkin<span class="version">v0.1.0</span></div>
+    <div class="nav-links">
+      <a href="#leaderboard">leaderboard</a>
+      <a href="#pact">pact</a>
+      <a href="https://github.com/clawkin">github</a>
+    </div>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- Hero -->
+  <section class="hero">
+    <h1>
+      <span class="line">clawkin lives in your statusline.</span>
+      <span class="line">Grows when you work cleanly.</span>
+      <span class="line last">Quietly changes how you work.</span>
+    </h1>
+    <pre class="hero-pet" aria-hidden="true">   ▄▄▄▄▄▄▄▄
+  ██▀▀▀▀▀▀██
+  █ ▄█  █▄ █
+  █ ▀▀  ▀▀ █
+  ██▄▄▄▄▄▄██
+   ▀▀▀██▀▀▀</pre>
+  </section>
+
+  <!-- Install bar -->
+  <div class="install-bar">
+    <span class="dollar">$</span>
+    <code id="install-cmd"></code>
+    <span class="caret" id="caret"></span>
+    <button class="copy-btn hidden" id="copy-btn" type="button">copy</button>
+  </div>
+
+  <!-- Window mockup — now narrates a fresh install -->
+  <div class="demo-standalone hidden" id="demo-section">
+    <div class="window">
+      <div class="window-chrome">
+        <span class="dot r"></span>
+        <span class="dot y"></span>
+        <span class="dot g"></span>
+        <span class="title">~/projects/clawkin — claude code</span>
+      </div>
+      <div class="window-body">
+        <div><span class="prompt">~ $ </span><span class="hi">claude</span></div>
+        <div class="muted">starting claude code session...</div>
+        <br>
+        <div><span class="hi">claude </span><span class="muted">→ reading files, registering hooks...</span></div>
+        <div><span class="hi">clawkin</span><span class="muted"> → clean session detected. feeding pet.</span></div>
+        <br>
+        <pre class="pet-mock">   ▄▄▄▄▄▄▄▄
+  ██▀▀▀▀▀▀██
+  █ ▄█  █▄ █
+  █ ▀▀  ▀▀ █
+  ██▄▄▄▄▄▄██
+   ▀▀▀██▀▀▀</pre>
+        <br>
+        <div class="muted">first level up → <span class="hi">L12</span>. your creature is shared worldwide at this level.</div>
+      </div>
+      <div class="statusline">
+        <div class="left">
+          <span>▣▤</span>
+          <span>L12 · 3d streak</span>
+        </div>
+        <div class="ctx">claude-sonnet-4-6 · 34% ctx · $0.12</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaderboard with undiscovered rows + pricing signal -->
+  <div class="section hidden" id="leaderboard">
+    <div class="section-label">Leaderboard</div>
+    <div>
+      <div class="lead-table">
+        <div class="lead-row">
+          <span class="lead-level">L847</span>
+          <span class="lead-user">@sarah_dev</span>
+          <span class="lead-title">first in the world</span>
+          <span class="lead-meta">15 mars 2026</span>
+        </div>
+        <div class="lead-row">
+          <span class="lead-level">L412</span>
+          <span class="lead-user">@yuji</span>
+          <span class="lead-title">top of Tokyo</span>
+          <span class="lead-meta">28d streak</span>
+        </div>
+        <div class="lead-row">
+          <span class="lead-level">L250</span>
+          <span class="lead-user">@tom</span>
+          <span class="lead-title">top of Lyon</span>
+          <span class="lead-meta">42d streak</span>
+        </div>
+        <div class="lead-row">
+          <span class="lead-level">L189</span>
+          <span class="lead-user">@maria</span>
+          <span class="lead-title">top of São Paulo</span>
+          <span class="lead-meta">61d streak</span>
+        </div>
+        <div class="lead-row undiscovered first-undiscovered">
+          <span class="lead-level">L2743</span>
+          <span class="lead-user">undiscovered</span>
+          <span class="lead-title">waiting for a first</span>
+          <span class="lead-meta"></span>
+        </div>
+        <div class="lead-row undiscovered">
+          <span class="lead-level">L8102</span>
+          <span class="lead-user">undiscovered</span>
+          <span class="lead-title">waiting for a first</span>
+          <span class="lead-meta"></span>
+        </div>
+        <div class="lead-row undiscovered">
+          <span class="lead-level">L10000</span>
+          <span class="lead-user">undiscovered</span>
+          <span class="lead-title">the last one</span>
+          <span class="lead-meta"></span>
+        </div>
+      </div>
+      <p class="lead-hint">
+        Every level is discovered once. First discoverer's name stays next to the creature forever. Local leaderboards by city, region, country — a newcomer can top their map in one month.
+        <span class="lead-pricing"><strong>Free forever.</strong> 9$/yr to appear publicly on the leaderboard.</span>
+      </p>
+    </div>
+  </div>
+
+  <!-- Pact block — 2 columns, no bullets, no wrapping label -->
+  <div class="pact-block hidden" id="pact">
+    <div class="dual-bare">
+      <div class="col-left">
+        <h3>What changes</h3>
+        <p>Cleaner sessions, without thinking about it.</p>
+        <p>Lighter context, fewer tokens burned.</p>
+        <p>A streak that signals discipline at a glance.</p>
+      </div>
+      <div class="col-right">
+        <h3>The pact</h3>
+        <p>We don't reward volume.</p>
+        <p>Newcomers have their own map.</p>
+        <p>Your pet hibernates, never dies.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer class="hidden" id="footer">
+    <span>v0.1.0</span>
+    <span>BSD-3-Clause</span>
+    <span class="spacer"></span>
+    <a href="https://clawkin.sh">clawkin.sh</a>
+    <a href="https://github.com/clawkin">github.com/clawkin</a>
+    <a href="https://twitter.com/clawkin">@clawkin</a>
+  </footer>
+
+</main>
+
+<script>
+  (function() {
+    const cmd = 'curl -sL clawkin.sh | sh';
+    const target = document.getElementById('install-cmd');
+    const caret = document.getElementById('caret');
+    const copyBtn = document.getElementById('copy-btn');
+    const demo = document.getElementById('demo-section');
+    const leaderboard = document.getElementById('leaderboard');
+    const pact = document.getElementById('pact');
+    const footer = document.getElementById('footer');
+    let i = 0;
+
+    function reveal(el, delay) {
+      setTimeout(() => {
+        el.classList.remove('hidden');
+        el.classList.add('fadein');
+      }, delay);
+    }
+
+    function tick() {
+      if (i < cmd.length) {
+        target.textContent += cmd[i];
+        i++;
+        setTimeout(tick, 38 + Math.random() * 45);
+      } else {
+        caret.style.display = 'none';
+        copyBtn.classList.remove('hidden');
+        copyBtn.classList.add('fadein');
+        reveal(demo, 200);
+        reveal(leaderboard, 450);
+        reveal(pact, 700);
+        reveal(footer, 900);
+      }
+    }
+    setTimeout(tick, 350);
+
+    copyBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(cmd);
+        copyBtn.textContent = 'copied';
+        copyBtn.classList.add('copied');
+        setTimeout(() => {
+          copyBtn.textContent = 'copy';
+          copyBtn.classList.remove('copied');
+        }, 1400);
+      } catch (e) {
+        copyBtn.textContent = 'copy failed';
+        setTimeout(() => { copyBtn.textContent = 'copy'; }, 1400);
+      }
+    });
+  })();
+</script>
+</body>
+</html>

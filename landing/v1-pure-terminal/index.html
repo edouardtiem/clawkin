@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>clawkin(1) — the pet that lives in your terminal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #000;
+    --fg: #e7e7e7;
+    --dim: #6a6a6a;
+    --rule: #2a2a2a;
+    --hi: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'JetBrains Mono', 'Menlo', 'Consolas', monospace;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 6vh 5vw;
+  }
+  .wrap {
+    max-width: 780px;
+    margin: 0 auto;
+  }
+  pre, .mono {
+    font-family: inherit;
+    margin: 0;
+    white-space: pre-wrap;
+  }
+  .prompt { color: var(--dim); user-select: none; }
+  .cmd-in { color: var(--hi); font-weight: 500; }
+  .cursor {
+    display: inline-block;
+    width: 0.55ch;
+    height: 1.1em;
+    background: var(--fg);
+    vertical-align: -2px;
+    animation: blink 1s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .pet {
+    color: var(--hi);
+    font-family: inherit;
+    font-size: 13px;
+    line-height: 1;
+    letter-spacing: 1px;
+  }
+
+  .manhead {
+    display: flex;
+    justify-content: space-between;
+    color: var(--dim);
+    font-weight: 500;
+    padding: 4px 0;
+    border-top: 1px dashed var(--rule);
+    border-bottom: 1px dashed var(--rule);
+    margin: 22px 0 18px;
+    letter-spacing: 0.02em;
+  }
+  .manhead span:nth-child(2) { color: var(--fg); }
+
+  h2.section {
+    color: var(--hi);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 28px 0 8px;
+  }
+
+  p, ul, ol { margin: 6px 0 6px 24px; }
+  ul { padding: 0; list-style: none; }
+  ul li::before { content: '·  '; color: var(--dim); }
+
+  .install-block {
+    background: #0a0a0a;
+    border: 1px solid var(--rule);
+    padding: 12px 16px;
+    margin: 12px 0 12px 24px;
+    color: var(--hi);
+    font-weight: 500;
+  }
+  .install-block::before {
+    content: '$ ';
+    color: var(--dim);
+    font-weight: 400;
+  }
+  .footer {
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--rule);
+    color: var(--dim);
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    font-size: 13px;
+  }
+  a { color: var(--fg); text-decoration: underline; text-underline-offset: 3px; }
+  a:hover { color: var(--hi); }
+  .hidden { display: none; }
+  .fadein { animation: fadein 0.35s ease-out both; }
+  @keyframes fadein { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: none; } }
+
+  .statusline-demo {
+    margin: 10px 0 10px 24px;
+    padding: 6px 10px;
+    border-left: 2px solid var(--fg);
+    background: #0a0a0a;
+    color: var(--hi);
+    letter-spacing: 1px;
+    font-size: 13px;
+  }
+
+  @media (max-width: 560px) {
+    body { padding: 4vh 4vw; font-size: 13px; }
+    .manhead { flex-direction: column; gap: 2px; }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+
+<pre class="pet" aria-hidden="true">   ▄▄▄▄▄▄▄▄
+  ██▀▀▀▀▀▀██
+  █ ▄█  █▄ █
+  █ ▀▀  ▀▀ █
+  ██▄▄▄▄▄▄██
+   ▀▀▀██▀▀▀   </pre>
+
+<br>
+
+<div class="mono" aria-live="polite">
+  <span class="prompt">~ $ </span><span class="cmd-in" id="typed"></span><span class="cursor" id="cursor"></span>
+</div>
+
+<div id="manpage" class="hidden">
+
+<div class="manhead">
+  <span>CLAWKIN(1)</span><span>CLAUDE CODE UTILITIES</span><span>CLAWKIN(1)</span>
+</div>
+
+<h2 class="section">Name</h2>
+<p>clawkin — the pet that lives in your Claude Code terminal.</p>
+
+<h2 class="section">Synopsis</h2>
+<p>A 12×12 pixel creature in your statusline. Fed by Claude Code lifecycle hooks. Grows with clean sessions, hibernates when you're away. No game. No notifications. No daemon.</p>
+
+<h2 class="section">Description</h2>
+<ul>
+  <li>Lives in your Claude Code statusline and shell prompt.</li>
+  <li>Level 1 to 10 000. One unique creature per level, shared worldwide.</li>
+  <li>Local leaderboards by city, region, country.</li>
+  <li>Two text files edited. Zero admin. Zero daemon. Works behind corporate IT.</li>
+</ul>
+
+<h2 class="section">Example statusline</h2>
+<div class="statusline-demo">▣▤ L250 · 47d streak</div>
+
+<h2 class="section">The pact</h2>
+<ul>
+  <li>We don't reward volume.</li>
+  <li>A newcomer can top their city in one month.</li>
+  <li>Your pet never dies. Absence is not punished.</li>
+</ul>
+
+<h2 class="section">Install</h2>
+<div class="install-block">curl -sL clawkin.sh | sh</div>
+<p style="color: var(--dim);">The installer edits <code>~/.zshrc</code> and <code>~/.claude/settings.json</code>. That's it.</p>
+
+<h2 class="section">See also</h2>
+<p>
+  <a href="https://clawkin.sh">clawkin.sh</a> ·
+  <a href="https://github.com/clawkin">github.com/clawkin</a> ·
+  <a href="https://twitter.com/clawkin">@clawkin</a>
+</p>
+
+<div class="footer">
+  <span>v0.1.0</span>
+  <span>clawkin.sh</span>
+  <span>BSD-3-Clause</span>
+  <span style="margin-left:auto;">built by devs, for devs</span>
+</div>
+
+</div>
+
+</main>
+
+<script>
+  (function() {
+    const text = "clawkin --what-is-this";
+    const typed = document.getElementById('typed');
+    const cursor = document.getElementById('cursor');
+    const man = document.getElementById('manpage');
+    let i = 0;
+
+    function tick() {
+      if (i < text.length) {
+        typed.textContent += text[i];
+        i++;
+        setTimeout(tick, 40 + Math.random() * 50);
+      } else {
+        setTimeout(() => {
+          man.classList.remove('hidden');
+          man.classList.add('fadein');
+        }, 380);
+      }
+    }
+    setTimeout(tick, 450);
+  })();
+</script>
+</body>
+</html>

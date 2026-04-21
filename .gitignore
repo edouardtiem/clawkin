@@ -1,0 +1,21 @@
+# macOS
+.DS_Store
+
+# Editor / local
+.vscode/
+.idea/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Vercel
+.vercel/
+.env
+.env.local
+.env*.local
+
+# Claude Code — setup local uniquement, ne pas versionner
+.claude/settings.local.json

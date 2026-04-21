@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>clawkin.sh — boot</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0500;
+    --fg: #ffb000;
+    --ok: #9fff5b;
+    --dim: #8a5f00;
+    --hi: #ffe38c;
+    --warn: #ffd74a;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'VT323', 'JetBrains Mono', monospace;
+    margin: 0;
+    padding: 0;
+    font-size: 22px;
+    line-height: 1.25;
+    -webkit-font-smoothing: none;
+  }
+  body {
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* CRT scan lines */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 10;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0, transparent 2px,
+      rgba(0,0,0,0.22) 2px, rgba(0,0,0,0.22) 3px
+    );
+  }
+  /* CRT vignette */
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 11;
+    background: radial-gradient(ellipse at center, rgba(255,176,0,0.035) 0%, rgba(0,0,0,0.55) 100%);
+  }
+
+  .screen {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 5vh 5vw 10vh;
+    position: relative;
+    z-index: 1;
+  }
+
+  .line { display: block; min-height: 1.25em; }
+  .ok { color: var(--ok); }
+  .dim { color: var(--dim); }
+  .hi { color: var(--hi); text-shadow: 0 0 10px rgba(255,227,140,0.55); font-weight: 700; }
+  .warn { color: var(--warn); }
+
+  .cursor {
+    display: inline-block;
+    width: 0.55ch;
+    height: 1em;
+    background: var(--fg);
+    vertical-align: -2px;
+    animation: blink 1s steps(1) infinite;
+    box-shadow: 0 0 10px var(--fg);
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .pet-wrap {
+    margin: 18px 0 6px;
+    padding: 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    line-height: 1;
+    color: var(--hi);
+    text-shadow: 0 0 10px rgba(255,227,140,0.45);
+    letter-spacing: 1px;
+  }
+
+  .statusline-box {
+    margin: 8px 0 10px;
+    padding: 8px 14px;
+    border: 1px solid var(--dim);
+    background: rgba(255,176,0,0.06);
+    color: var(--hi);
+    text-shadow: 0 0 8px rgba(255,227,140,0.4);
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    letter-spacing: 1.5px;
+  }
+
+  .install-box {
+    margin: 8px 0 10px;
+    padding: 10px 16px;
+    border: 1px solid var(--fg);
+    background: rgba(255,176,0,0.08);
+    color: var(--hi);
+    text-shadow: 0 0 10px rgba(255,227,140,0.55);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    letter-spacing: 1px;
+    display: inline-block;
+  }
+  .install-box::before {
+    content: '$ ';
+    color: var(--dim);
+    text-shadow: none;
+  }
+
+  .links {
+    margin-top: 16px;
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    color: var(--dim);
+  }
+  a { color: var(--hi); text-decoration: none; text-shadow: 0 0 8px rgba(255,227,140,0.4); border-bottom: 1px solid var(--dim); padding-bottom: 1px; }
+  a:hover { border-bottom-color: var(--hi); }
+
+  .rule {
+    color: var(--dim);
+    letter-spacing: 2px;
+    margin: 10px 0 4px;
+  }
+
+  .fadein { animation: fadein 0.2s ease-out both; }
+  @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+
+  @media (max-width: 600px) {
+    body { font-size: 18px; }
+    .pet-wrap, .statusline-box, .install-box { font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+<main class="screen" id="screen" aria-live="polite"></main>
+
+<script>
+(function() {
+  const screen = document.getElementById('screen');
+
+  const petAscii = `   ▄▄▄▄▄▄▄▄
+  ██▀▀▀▀▀▀██
+  █ ▄█  █▄ █
+  █ ▀▀  ▀▀ █
+  ██▄▄▄▄▄▄██
+   ▀▀▀██▀▀▀`;
+
+  const seq = [
+    { t: "[    0.000012] clawkin v0.1.0 booting...", cls: "dim", p: 90 },
+    { t: "[    0.003891] probing shell environment .......... [ ok ]", cls: "ok", p: 120 },
+    { t: "[    0.010245] scanning ~/.claude/settings.json .... [ ok ]", cls: "ok", p: 120 },
+    { t: "[    0.018773] registering lifecycle hooks ......... [ ok ]", cls: "ok", p: 120 },
+    { t: "[    0.024120]    SessionStart  SessionEnd  Stop", cls: "dim", p: 70 },
+    { t: "[    0.024235]    PreToolUse    PostToolUse  PreCompact", cls: "dim", p: 100 },
+    { t: "[    0.041600] hatching pet from entropy pool ...... [ ok ]", cls: "ok", p: 350 },
+    { t: "", p: 200 },
+    { t: "clawkin ready.", cls: "hi", p: 500 },
+    { t: "", p: 160 },
+    { t: "> a pet that lives in your claude code statusline.", p: 140 },
+    { t: "> it grows when you work cleanly. it hibernates when you're away.", p: 160 },
+    { t: "> you never play. it never dies.", p: 260 },
+    { t: "", p: 120 },
+    { special: "pet", p: 260 },
+    { t: "  this is your level 1. everyone at L1 sees this shape.", cls: "dim", p: 160 },
+    { t: "  at L250, you'll see something else. the whole world will.", cls: "dim", p: 220 },
+    { t: "", p: 100 },
+    { t: "your statusline, pending first install:", cls: "dim", p: 140 },
+    { special: "statusline", p: 260 },
+    { t: "", p: 180 },
+    { t: "── the pact ─────────────────────────────────", cls: "rule", p: 120 },
+    { t: "  · we don't reward volume.", p: 140 },
+    { t: "  · a newcomer can top their city in one month.", p: 140 },
+    { t: "  · your pet never dies. absence is not punished.", p: 260 },
+    { t: "", p: 100 },
+    { t: "── install ──────────────────────────────────", cls: "rule", p: 120 },
+    { special: "install", p: 240 },
+    { t: "two text files edited. zero admin. zero daemon.", cls: "dim", p: 260 },
+    { t: "", p: 160 },
+    { special: "links", p: 0 },
+  ];
+
+  let idx = 0;
+  function next() {
+    if (idx >= seq.length) {
+      const end = document.createElement('span');
+      end.className = 'line';
+      end.innerHTML = '<span class="dim">~ $</span> <span class="cursor"></span>';
+      screen.appendChild(end);
+      return;
+    }
+    const step = seq[idx++];
+
+    if (step.special === 'pet') {
+      const pre = document.createElement('pre');
+      pre.className = 'pet-wrap fadein';
+      pre.textContent = petAscii;
+      screen.appendChild(pre);
+    } else if (step.special === 'statusline') {
+      const d = document.createElement('div');
+      d.className = 'statusline-box fadein';
+      d.textContent = '▣▤  L250 · 47d streak  · claude-sonnet-4-6';
+      const wrap = document.createElement('div');
+      wrap.appendChild(d);
+      screen.appendChild(wrap);
+    } else if (step.special === 'install') {
+      const d = document.createElement('div');
+      d.className = 'install-box fadein';
+      d.textContent = 'curl -sL clawkin.sh | sh';
+      const wrap = document.createElement('div');
+      wrap.appendChild(d);
+      screen.appendChild(wrap);
+    } else if (step.special === 'links') {
+      const div = document.createElement('div');
+      div.className = 'links fadein';
+      div.innerHTML = '<a href="https://clawkin.sh">clawkin.sh</a> <span>·</span> <a href="https://github.com/clawkin">github.com/clawkin</a> <span>·</span> <a href="https://twitter.com/clawkin">@clawkin</a>';
+      screen.appendChild(div);
+    } else {
+      const span = document.createElement('span');
+      span.className = 'line fadein ' + (step.cls || '');
+      span.textContent = step.t || '\u00A0';
+      screen.appendChild(span);
+    }
+    setTimeout(next, step.p);
+  }
+
+  setTimeout(next, 300);
+})();
+</script>
+</body>
+</html>
