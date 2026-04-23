@@ -21,6 +21,7 @@
 | Architecture technique | ✅ Validée — zéro LLM, déterministe local |
 | Business model V1 | ✅ Freemium dès J1 — paid 9$/an débloque identité publique (cf [docs/06](06-freemium-et-plg.md)) |
 | Data collection comme asset | ✅ Pivot session 3 — dataset Claude Code agrégé = asset défendable (cf [docs/09](09-data-collection-et-rapports.md)) |
+| Formule d'évolution et endgame | ✅ Verrouillée session 3 — 6 signaux, courbe OSRS-like, Lignées + Apex + Zen, cadence annuelle de features (cf [docs/10](10-formule-et-progression.md)) |
 | Leaderboard | 🔄 Reclassé "optionnel, post-traction" — plus la clé de voûte du paid |
 | **Produit réel (CLI)** | ❌ Pas commencé |
 | **Générateur sprites (Q2)** | ❌ Pas entamé — plus gros risque technique |
@@ -212,6 +213,25 @@ Questions nouvelles qui ont émergé en session 2 (cf [docs/06 section 12](06-fr
 - Finalisation Vercel (démarrée session 2, en cours)
 - Domaine `clawkin.sh` à pointer
 - Ship landing v1.11 en prod dès Vercel prêt
+
+---
+
+### Addendum session 3 (même journée) — Game design et formule de progression
+
+9. **Questionnement du système d'évolution** par Edouard : l'idée initiale (Pattern A seul = numéro 1-1000 linéaire) est identifiée comme trop plate pour un public dev senior. Recherche deep gamification lancée.
+10. **Synthèse gaming patterns** : identification de 8 patterns transversaux depuis Pokémon, Tamagotchi, Dark Souls, OSRS, Nier, Hollow Knight, EVE. Recommandation : combiner Pattern A (Pokédex partagé) + C (Shiny déterministe) + E (Opacité révélée, ex-Prop 4).
+11. **Intégration Prop 4 en V1** : distinction faite entre **concept communiqué** (les 6 signaux sont nommés publiquement) et **règles cachées** (poids, courbe, seuils, triggers jamais publiés). Dark Souls vibe, défensibilité forte.
+12. **Design formule par 3 experts en parallèle** : Claude Code hooks (signaux disponibles), game designer (courbe + endgame), psy rétention (long-terme top users). Synthèse verrouillée dans [docs/10](10-formule-et-progression.md).
+13. **Décisions Edouard sur la formule** :
+    - Décision 1 : cap diminishing daily returns fixé à **5 sessions/jour** (vs 3-4 initial).
+    - Décision 2 : **cadence annuelle de content** — chaque année, une nouvelle feature visuelle à un nouveau palier de 1K niveaux, apparaissant directement sur le Clawkin. Premier L1000 user attendu à 18-24 mois, donc traits Lignées à livrer en V1.5.
+    - Décision 3 : format Annual Report **à trancher séparément** — contrainte clé = génération sans IA, scalable à 10K+ users.
+
+**Artefacts livrés en addendum session 3** :
+- `docs/10-formule-et-progression.md` — nouveau document, verrouille formule XP + courbe + endgame + rétention + warning list + 12 traits Lignées candidats
+- Update `docs/04-roadmap-et-decisions.md` — ajout ligne formule dans état des lieux + ce journal
+
+**Prochain sujet à traiter** : décision 3 (génération Annual Report sans IA, scalable), puis Q2 sprites generator (plus gros risque technique du projet).
 
 ### Session 2 — 2026-04-21 (stratégie business & PLG, 0 code)
 
