@@ -177,10 +177,107 @@ Les devs top (L1000+) doivent avoir quelque chose de neuf à découvrir réguli�
 
 Orthogonales à l'endgame. Marchent dès J1 et continuent à L10000+.
 
-### 9.1 Annual Clawkin Report (snapshot rituel)
-1×/an, jour anniversaire d'install. Contenu : courbe d'évolution L, répartition patterns, jour le plus dense, semaine la plus calme, trait de lignée dominant.
+### 9.1 Annual Clawkin Report (snapshot rituel) — spec complète
 
-**Format de génération à trancher (décision 3, en discussion)** : template rendering sans IA, scalable à 10K+ users. URL permanente `clawkin.sh/u/{handle}/{year}`. Détails à documenter après arbitrage.
+1×/an, jour anniversaire d'install. Page HTML statique déterministe, générée sans IA.
+
+#### Principe de génération : templates + variables
+
+Aucun LLM. Le rapport est **composé**, pas écrit. Chaque phrase est un template pré-écrit, rempli depuis les agrégats de l'user.
+
+```
+Template :
+  "En {year}, tu as codé {hours} heures avec Claude Code,
+   dont {deep_pct}% en sessions profondes (+{delta}% vs {prev_year})."
+
+Données user (JSON) :
+  { year: 2026, hours: 412, deep_pct: 67, delta: 23, prev_year: 2025 }
+
+Rendu :
+  "En 2026, tu as codé 412 heures avec Claude Code,
+   dont 67% en sessions profondes (+23% vs 2025)."
+```
+
+Zéro inférence. Pur string formatting. Instantané. Déterministe.
+
+#### Narration "intelligente" par règles déterministes
+
+30-50 phrases narratives pré-écrites, chacune activée par un trigger booléen sur les stats de l'user :
+
+```
+If max(weekly_sessions_Q2) > 1.3 * avg_weekly:
+  "Ton printemps a été un pic — ta semaine la plus dense 
+   (week 18) a dépassé ta moyenne annuelle de {pct}%."
+
+If longest_quiet_streak > 14 days AND quality_after > quality_before:
+  "Tu as pris une pause de {days} jours en {month}. 
+   À ton retour, ta qualité moyenne était {delta}% supérieure."
+
+If most_used_trait matches "Architecte":
+  "Cette année, tu as été un Architecte. 
+   Tes sessions sont structurées, ton contexte maîtrisé."
+```
+
+L'user perçoit un rapport qui lui parle. En vrai, c'est du branching déterministe.
+
+#### Contenu type d'un rapport
+
+- **Chiffres bruts** : heures totales, sessions ouvertes, longest streak, XP gagné, niveau atteint, numéro Clawkin actuel et précédents
+- **Histogrammes** : sessions par heure de la journée, par jour de la semaine, tool distribution, model distribution
+- **Charts SVG minimalistes** style terminal/ASCII : courbe de level au fil de l'année, barres par mois
+- **Milestones personnels** : "Tu as passé L1000 le 14 mars", "Ton #247 Clawkin est apparu le 2 juin"
+- **Narration conditionnelle** (cf supra) : 5-8 phrases actives sur les 30-50 templates disponibles
+- **Trait de Lignée dominant** (si L1000+) : le trait qui a dominé ton année
+- **Comparaisons à toi-même passé** : "Tes semaines calmes sont 2× plus longues qu'en 2025"
+
+#### Esthétique
+
+- **V1 (MVP)** : HTML + Tailwind, typographie clean, look terminal-esque, charts SVG épurés. Zéro JS framework lourd, zéro animation. Shareable mais austère.
+- **V1.5** : animations douces à l'ouverture, transitions, easter eggs anniversaire (Roman numeral pour le N-ième anniversaire, palette aux couleurs du trait Lignée).
+- **V2+** : version partageable sur réseaux (GIF ou vidéo courte rendue server-side), compatible embed Twitter/Bluesky.
+
+#### Distribution free vs paid
+
+- **Free users** : URL publique anonyme `clawkin.sh/c/{hash}/{year}`
+- **Paid users** : URL handle custom `clawkin.sh/u/{handle}/{year}`
+- **Même richesse de contenu dans les deux cas.** Seul le slug change.
+- **Motif** : l'Annual Report est le meilleur moteur viral possible (share Twitter aux anniversaires). Le handle custom reste le diff identitaire paid pour la page profil permanente, pas pour le rapport.
+
+#### Notification
+
+- **CLI banner silencieux** uniquement, à la première session du jour anniversaire : une ligne discrète en bas du terminal :
+  ```
+  >>> your 2026 clawkin report is ready — clawkin.sh/u/edouard/2026
+  ```
+- **Aucun email, jamais.** Dev seniors détestent l'email, et on n'a pas leur adresse (seulement handle GitHub pour paid).
+- **Aucune notification OS / push.** Anti-compulsion strict.
+- Le dev voit le banner, ou ne le voit pas. Il peut toujours retrouver son rapport par l'URL quand il veut.
+
+#### Génération : on-demand
+
+- **Rendu au premier accès de l'URL**, caché ensuite (Vercel edge cache).
+- Pas de batch cron annuel, pas d'infra supplémentaire.
+- Premier access : 100-300ms. Subsequent : instant (cache hit).
+- Peut basculer vers pré-génération batch plus tard si besoin.
+
+#### Coûts à 10K users (free tier infra)
+
+| Item | Coût |
+|---|---|
+| Compute edge function (render 1 page) | ~10ms × 10K = 100s total / an |
+| Stockage HTML généré | ~50KB × 10K = 500MB |
+| Cache hit rate après 1ère visite | ~100% |
+| **Coût Vercel + Cloudflare** | **0€ (free tier)** |
+
+Scale infini. Zéro coût variable. Même à 100K users, reste sur des cents par an.
+
+#### Red lines conservées
+
+- Aucun email collecté pour l'Annual Report
+- Aucun contenu de code analysé (zéro LLM dans la pipeline)
+- Rendu 100% serveur Vercel/Cloudflare, déterministe
+- URLs anonymes `c/{hash}` jamais cross-référencées à une identité réelle
+- Templates et règles publiés en open source (pas les données user, elles)
 
 ### 9.2 Silent evolution milestones (Dark Souls style)
 À L1000, L2500, L5000, L10000, le sprite change (pelage, posture, détail pixel). **Zéro annonce. Zéro toast. Zéro "Congratulations!"**. Le dev remarque, ou pas. Crée les conversations entre users ("wait, ton Clawkin a une couronne ?") — seul marketing non-cringe possible.
@@ -284,7 +381,6 @@ Au-delà du dataset/pipeline déjà acté dans [docs/09](09-data-collection-et-r
 
 ## 14. Questions ouvertes
 
-- **Décision 3 — génération Annual Report sans IA** — à trancher. Contrainte scalabilité 10K+ users sans coût variable, template-based vraisemblablement.
 - **Liste finale des 12 traits** — validation/remplacement des noms, définition des triggers exacts (mais cachés).
 - **Cadence de release des features annuelles** — premier lundi de janvier ? anniversaire du launch Clawkin ? jour de la Dev Conference Anthropic ?
 - **Hiscore public Apex** — pseudonymisé (handle seulement) ou avec lien vers page profil ? Activation seuil.

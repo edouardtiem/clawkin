@@ -225,7 +225,7 @@ Questions nouvelles qui ont émergé en session 2 (cf [docs/06 section 12](06-fr
 13. **Décisions Edouard sur la formule** :
     - Décision 1 : cap diminishing daily returns fixé à **5 sessions/jour** (vs 3-4 initial).
     - Décision 2 : **cadence annuelle de content** — chaque année, une nouvelle feature visuelle à un nouveau palier de 1K niveaux, apparaissant directement sur le Clawkin. Premier L1000 user attendu à 18-24 mois, donc traits Lignées à livrer en V1.5.
-    - Décision 3 : format Annual Report **à trancher séparément** — contrainte clé = génération sans IA, scalable à 10K+ users.
+    - Décision 3 : Annual Report verrouillé — **templates + variables + règles déterministes**, zéro LLM. URL anonyme free `clawkin.sh/c/{hash}/{year}` + URL handle paid `clawkin.sh/u/{handle}/{year}`, même richesse de contenu. Notification via CLI banner silencieux uniquement, jamais d'email. Rendu on-demand cached. Coût 0€ sur Vercel free tier jusqu'à 100K+ users. Spec complète dans [docs/10 §9.1](10-formule-et-progression.md#section-91).
 
 **Artefacts livrés en addendum session 3** :
 - `docs/10-formule-et-progression.md` — nouveau document, verrouille formule XP + courbe + endgame + rétention + warning list + 12 traits Lignées candidats
