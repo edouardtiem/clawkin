@@ -1,6 +1,8 @@
 # 07 — Metrics et tracking V1
 
 > Décision actée 2026-04-21 (session 2, après pivot freemium J1). Fixe quoi mesurer, comment, avec quelles lignes rouges. L'instrumentation doit être construite AVANT le launch, pas après.
+>
+> **⚠️ Supersedé partiellement par [docs/09](09-data-collection-et-rapports.md) (2026-04-23)** sur l'ambition et la finalité du tracking. Le pivot docs/09 fait passer la data d'un outil de décision interne à un asset stratégique publié. Red lines privacy de ce document conservées intactes et renforcées dans docs/09. Lire docs/09 d'abord.
 
 ---
 

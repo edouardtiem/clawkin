@@ -20,6 +20,7 @@
 | Landing page | ✅ Prête à ship — v1.11 finale |
 | Architecture technique | ✅ Validée — zéro LLM, déterministe local |
 | Business model V1 | ✅ Freemium dès J1 — paid 9$/an débloque identité publique (cf [docs/06](06-freemium-et-plg.md)) |
+| Data collection comme asset | ✅ Pivot session 3 — dataset Claude Code agrégé = asset défendable (cf [docs/09](09-data-collection-et-rapports.md)) |
 | Leaderboard | 🔄 Reclassé "optionnel, post-traction" — plus la clé de voûte du paid |
 | **Produit réel (CLI)** | ❌ Pas commencé |
 | **Générateur sprites (Q2)** | ❌ Pas entamé — plus gros risque technique |
@@ -186,6 +187,31 @@ Questions nouvelles qui ont émergé en session 2 (cf [docs/06 section 12](06-fr
 - `landing/v1-pure-terminal/` → `landing/v1.11-no-leaderboard/` — 11 itérations de landing
 - `landing/v2-amber-crt/`, `landing/v3-modern-dev/` — directions alternatives
 - `.claude/launch.json` — config dev server (`npx serve landing`)
+
+### Session 3 — 2026-04-23 (data comme asset stratégique, 0 code)
+
+1. **Décision ship landing v1.11 en prod** via Vercel une fois le projet branché sur le repo (action parallèle d'Edouard).
+2. **Pivot data collection** : challenge du scope tracking docs/07 — jusqu'ici pensé comme outil de décision produit interne. Reframe comme **asset stratégique défendable** (SEO, trust, valeur rachat). Le code Clawkin se clone en 2-3 semaines, un dataset 12 mois d'usage Claude Code agrégé ne se clone pas.
+3. **Identification du playbook éprouvé** : Stack Overflow Developer Survey, GitHub Octoverse, JetBrains Developer Ecosystem, Datadog State of DevOps, Vercel State of Frontend — "State of X" quarterly = SEO + crédibilité + intérêt M&A démontrable.
+4. **Conception de la pipeline "local aggregation, scalar upload"** : le CLI voit tout en local (hooks + JSON statusline), agrège on-device, n'upload que scalaires/histogrammes quotidiens. Zéro capacité de ré-identification depuis les données uploadées, red lines privacy intactes.
+5. **Résolution des 3 questions techniques ouvertes** :
+   - UUID anonyme free user → stocké dans `~/.config/clawkin/uuid` séparé du state volatile. Persiste aux réinstalls tant que config dir non wipé. Bruit résiduel (3-7%/an) accepté.
+   - Event upgrade_prompt_shown → buffer local `events.jsonl` + flush quotidien via même endpoint que daily_ping. Un seul appel réseau/user/jour. Résilient au offline.
+   - `/state` public → pas au launch. Activation à 500 installs (signal de traction crédible, avant c'est contre-productif).
+6. **Design du rapport "State of Claude Code"** trimestriel : headlines testables, JSON dataset public, format synthèse multi-canal (web + JSON + thread + HN + presse dev).
+7. **Anticipation Anthropic** : 3 scénarios (acquisition, partnership/TOS, blocage API) + mitigations. Communication proactive avant premier rapport public.
+8. **Chantiers V1 révisés** : ~10 jours solo (vs 5-6 initial docs/07) pour intégrer pipeline data publishable. Compatible fenêtre 2-3 semaines si buffer local démarre J1 + dashboard admin peut attendre M+1.
+
+**Artefacts livrés en session 3** :
+- `docs/09-data-collection-et-rapports.md` — nouveau document stratégique, supersede partiellement docs/07 sur l'ambition
+- Update `docs/07-metrics-et-tracking.md` — pointeur vers docs/09 en intro, red lines conservées
+- Update `docs/04-roadmap-et-decisions.md` — ce document
+- Commit préalable de `docs/07` et `docs/08` (manquaient du push session 2)
+
+**Actions externes en cours par Edouard** :
+- Finalisation Vercel (démarrée session 2, en cours)
+- Domaine `clawkin.sh` à pointer
+- Ship landing v1.11 en prod dès Vercel prêt
 
 ### Session 2 — 2026-04-21 (stratégie business & PLG, 0 code)
 
