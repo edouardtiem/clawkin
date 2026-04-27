@@ -23,9 +23,10 @@
 | Data collection comme asset | ✅ Pivot session 3 — dataset Claude Code agrégé = asset défendable (cf [docs/09](09-data-collection-et-rapports.md)) |
 | Formule d'évolution et endgame | ✅ Verrouillée session 3 — 6 signaux, courbe OSRS-like, Lignées + Apex + Zen, cadence annuelle de features (cf [docs/10](10-formule-et-progression.md)) |
 | Emblème statusline + surfaces visuelles | ✅ Verrouillé session 4 — emblème `k` lowercase Braille `⡧⡂` fixe en statusline, 250 silhouettes 12×12 réservées au badge GitHub + page profil (cf [docs/11](11-emblemes-et-surfaces.md)) |
+| Plan production 250 silhouettes | ✅ Documenté session 4 — distribution 25 × 10 familles, 5 vagues, style guide, mapping pattern→sprite, naming, format SVG (cf [docs/12](12-production-250-silhouettes.md)) |
 | Leaderboard | 🔄 Reclassé "optionnel, post-traction" — plus la clé de voûte du paid |
 | **Produit réel (CLI)** | ❌ Pas commencé |
-| **Générateur sprites (Q2)** | ❌ Pas entamé — plus gros risque technique |
+| **Générateur sprites (Q2)** | 🟡 wave-01 (30/250) faite — wave-02 à 05 à produire (~3h dont naming) |
 | **Formule progression (Q1)** | ❌ Pas entamée |
 | Validation externe | ❌ Zéro dev externe consulté |
 
