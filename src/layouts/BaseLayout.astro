@@ -1,13 +1,20 @@
+---
+interface Props {
+  title?: string;
+}
+
+const { title = 'clawkin — lives in your statusline' } = Astro.props;
+---
 <!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>clawkin — lives in your statusline</title>
+<title>{title}</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
+<style is:global>
   :root {
     --bg: #000;
     --bg-card: #0a0a0a;
@@ -360,191 +367,10 @@
 </style>
 </head>
 <body>
-
-<nav>
-  <div class="nav-inner">
-    <div class="brand">clawkin<span class="version">v0.1.0</span></div>
-    <div class="nav-links">
-      <a href="#badge">badge</a>
-      <a href="#pact">pact</a>
-      <a href="https://github.com/clawkin">github</a>
-    </div>
-  </div>
-</nav>
-
-<main class="wrap">
-
-  <!-- Hero -->
-  <section class="hero">
-    <h1>
-      <span class="line">clawkin lives in your statusline.</span>
-      <span class="line">Grows when you work cleanly.</span>
-      <span class="line last">Quietly changes how you work.</span>
-    </h1>
-    <pre class="hero-clawkin" aria-hidden="true">   ▄▄▄▄▄▄▄▄
-  ██▀▀▀▀▀▀██
-  █ ▄█  █▄ █
-  █ ▀▀  ▀▀ █
-  ██▄▄▄▄▄▄██
-   ▀▀▀██▀▀▀</pre>
-  </section>
-
-  <!-- Install bar -->
-  <div class="install-bar">
-    <span class="dollar">$</span>
-    <code id="install-cmd"></code>
-    <span class="caret" id="caret"></span>
-    <button class="copy-btn hidden" id="copy-btn" type="button">copy</button>
-  </div>
-
-  <!-- Window mockup — now narrates a fresh install -->
-  <div class="demo-standalone hidden" id="demo-section">
-    <div class="window">
-      <div class="window-chrome">
-        <span class="dot r"></span>
-        <span class="dot y"></span>
-        <span class="dot g"></span>
-        <span class="title">~/projects/clawkin — claude code</span>
-      </div>
-      <div class="window-body">
-        <div><span class="prompt">~ $ </span><span class="hi">claude</span></div>
-        <div class="muted">starting claude code session...</div>
-        <br>
-        <div><span class="hi">claude </span><span class="muted">→ reading files, registering hooks...</span></div>
-        <div><span class="hi">clawkin</span><span class="muted"> → clean session detected. feeding your clawkin.</span></div>
-        <br>
-        <pre class="clawkin-mock">   ▄▄▄▄▄▄▄▄
-  ██▀▀▀▀▀▀██
-  █ ▄█  █▄ █
-  █ ▀▀  ▀▀ █
-  ██▄▄▄▄▄▄██
-   ▀▀▀██▀▀▀</pre>
-        <br>
-        <div class="muted">first level up → <span class="hi">L12</span>. your clawkin is shared worldwide at this level.</div>
-      </div>
-      <div class="statusline">
-        <div class="left">
-          <span>▣▤</span>
-          <span>L12 · 3d streak</span>
-        </div>
-        <div class="ctx">claude-sonnet-4-6 · 34% ctx · $0.12</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Badge — GitHub README embed -->
-  <div class="section hidden" id="badge">
-    <div class="section-label">Badge</div>
-    <div>
-      <div class="badge-preview" aria-label="Example Clawkin GitHub badge">
-        <span class="badge-left">clawkin</span>
-        <span class="badge-right">▣▤ L12 · 3d</span>
-      </div>
-      <div class="badge-snippet">
-        <code id="badge-cmd">![Clawkin](https://clawkin.sh/u/you.svg)</code>
-        <button class="copy-btn" id="copy-badge-btn" type="button">copy</button>
-      </div>
-      <p class="section-hint">Drop one line in your GitHub profile README. The badge reflects your live clawkin, level, and streak — updated daily. Free.</p>
-    </div>
-  </div>
-
-  <!-- Pact block — 2 columns, no bullets, no wrapping label -->
-  <div class="pact-block hidden" id="pact">
-    <div class="dual-bare">
-      <div class="col-left">
-        <h3>What changes</h3>
-        <p>Cleaner sessions, without thinking about it.</p>
-        <p>Lighter context, fewer tokens burned.</p>
-        <p>A streak that signals discipline at a glance.</p>
-      </div>
-      <div class="col-right">
-        <h3>The pact</h3>
-        <p>We don't reward volume.</p>
-        <p>Your start date doesn't matter — your habits do.</p>
-        <p>Your clawkin hibernates, never dies.</p>
-      </div>
-    </div>
-  </div>
-
-  <footer class="hidden" id="footer">
-    <span>v0.1.0</span>
-    <span class="spacer"></span>
-    <a href="https://clawkin.sh">clawkin.sh</a>
-    <a href="https://github.com/clawkin">github.com/clawkin</a>
-    <a href="https://twitter.com/clawkin">@clawkin</a>
-  </footer>
-
-</main>
-
+<slot />
 <script>
-  (function() {
-    const cmd = 'curl -sL clawkin.sh | sh';
-    const target = document.getElementById('install-cmd');
-    const caret = document.getElementById('caret');
-    const copyBtn = document.getElementById('copy-btn');
-    const demo = document.getElementById('demo-section');
-    const badge = document.getElementById('badge');
-    const pact = document.getElementById('pact');
-    const footer = document.getElementById('footer');
-    let i = 0;
-
-    function reveal(el, delay) {
-      setTimeout(() => {
-        el.classList.remove('hidden');
-        el.classList.add('fadein');
-      }, delay);
-    }
-
-    function tick() {
-      if (i < cmd.length) {
-        target.textContent += cmd[i];
-        i++;
-        setTimeout(tick, 38 + Math.random() * 45);
-      } else {
-        caret.style.display = 'none';
-        copyBtn.classList.remove('hidden');
-        copyBtn.classList.add('fadein');
-        reveal(demo, 200);
-        reveal(badge, 450);
-        reveal(pact, 700);
-        reveal(footer, 900);
-      }
-    }
-    setTimeout(tick, 350);
-
-    copyBtn.addEventListener('click', async () => {
-      try {
-        await navigator.clipboard.writeText(cmd);
-        copyBtn.textContent = 'copied';
-        copyBtn.classList.add('copied');
-        setTimeout(() => {
-          copyBtn.textContent = 'copy';
-          copyBtn.classList.remove('copied');
-        }, 1400);
-      } catch (e) {
-        copyBtn.textContent = 'copy failed';
-        setTimeout(() => { copyBtn.textContent = 'copy'; }, 1400);
-      }
-    });
-
-    // Badge snippet copy
-    const badgeCmd = '![Clawkin](https://clawkin.sh/u/you.svg)';
-    const badgeBtn = document.getElementById('copy-badge-btn');
-    badgeBtn.addEventListener('click', async () => {
-      try {
-        await navigator.clipboard.writeText(badgeCmd);
-        badgeBtn.textContent = 'copied';
-        badgeBtn.classList.add('copied');
-        setTimeout(() => {
-          badgeBtn.textContent = 'copy';
-          badgeBtn.classList.remove('copied');
-        }, 1400);
-      } catch (e) {
-        badgeBtn.textContent = 'copy failed';
-        setTimeout(() => { badgeBtn.textContent = 'copy'; }, 1400);
-      }
-    });
-  })();
+  import { inject } from '@vercel/analytics';
+  inject();
 </script>
 </body>
 </html>

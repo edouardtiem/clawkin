@@ -17,5 +17,9 @@ yarn-error.log*
 .env.local
 .env*.local
 
+# Astro
+dist/
+.astro/
+
 # Claude Code — setup local uniquement, ne pas versionner
 .claude/settings.local.json

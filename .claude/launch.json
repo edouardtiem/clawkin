@@ -3,9 +3,27 @@
   "configurations": [
     {
       "name": "landing-preview",
-      "runtimeExecutable": "npx",
-      "runtimeArgs": ["serve", "landing"],
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--", "--port", "3000"],
       "port": 3000
+    },
+    {
+      "name": "sprites-preview",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "sprites/proto-01", "-p", "3001"],
+      "port": 3001
+    },
+    {
+      "name": "wave-01-preview",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "sprites/wave-01", "-p", "3002"],
+      "port": 3002
+    },
+    {
+      "name": "emblems-preview",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "sprites/emblems", "-p", "3003"],
+      "port": 3003
     }
   ]
 }

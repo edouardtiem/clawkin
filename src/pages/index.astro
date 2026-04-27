@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Hero from '../components/Hero.astro';
+import InstallBar from '../components/InstallBar.astro';
+import DemoWindow from '../components/DemoWindow.astro';
+import Badge from '../components/Badge.astro';
+import Pact from '../components/Pact.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+---
+<BaseLayout>
+  <Nav />
+  <main class="wrap">
+    <Hero />
+    <InstallBar />
+    <DemoWindow />
+    <Badge />
+    <Pact />
+    <SiteFooter />
+  </main>
+  <script>
+    import '../scripts/landing.js';
+  </script>
+</BaseLayout>
