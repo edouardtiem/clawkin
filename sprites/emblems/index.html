@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Clawkin — Emblèmes statusline (10 candidats)</title>
+<style>
+  :root {
+    --bg: #0a0e0a;
+    --fg: #d1d5db;
+    --fg-dim: #6b7280;
+    --text: #a8b8a8;
+    --text-dim: #556555;
+    --card: #131913;
+    --card-top: #1a2120;
+    --border: #243224;
+    --accent: #fbbf24;
+    --reco: #4ade80;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', 'JetBrains Mono', monospace;
+    padding: 48px 32px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  h1 { color: var(--fg); font-size: 22px; margin-bottom: 8px; font-weight: 600; }
+  .subtitle { color: var(--text-dim); margin-bottom: 32px; font-size: 13px; }
+  .legend {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 16px 20px;
+    margin-bottom: 32px;
+    font-size: 12px;
+    max-width: 900px;
+  }
+  .legend strong { color: var(--accent); }
+  .legend em { color: var(--reco); font-style: normal; }
+  h2.section { color: var(--accent); font-size: 14px; margin-bottom: 16px; margin-top: 32px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 18px;
+    transition: border-color 0.15s;
+    position: relative;
+  }
+  .card.reco { border-color: var(--reco); }
+  .card.reco::before {
+    content: "TOP RECO";
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 9px;
+    color: var(--reco);
+    letter-spacing: 0.05em;
+  }
+  .card:hover { border-color: var(--fg); }
+  .card-id { font-size: 11px; color: var(--text-dim); margin-bottom: 2px; }
+  .name { color: var(--fg); font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+  .ref-tag { font-size: 10px; color: var(--accent); margin-bottom: 8px; }
+  .desc { font-size: 11px; color: var(--text-dim); margin-bottom: 16px; line-height: 1.5; min-height: 50px; }
+  .render-row {
+    display: flex;
+    gap: 14px;
+    align-items: flex-end;
+    margin-bottom: 12px;
+  }
+  .render-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .render-label { font-size: 9px; color: var(--text-dim); }
+  .braille-render {
+    font-family: 'SF Mono', Monaco, 'JetBrains Mono', monospace;
+    font-size: 18px;
+    line-height: 1;
+    color: var(--fg);
+    background: #000;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+  }
+  .pixel-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+  }
+  .pixel-grid.s8 { width: 64px; height: 64px; padding: 4px; background: #000; border: 1px solid var(--border); box-sizing: content-box; }
+  .pixel-grid div { background: transparent; }
+  .pixel-grid div.on { background: var(--fg); }
+  .statusline-mock {
+    background: #000;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 8px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .statusline-mock .braille { color: var(--fg); font-size: 14px; }
+  .ref-section {
+    margin-top: 64px;
+    padding: 24px;
+    background: var(--card);
+    border: 1px solid var(--border);
+  }
+  .ref-section h2 { color: var(--accent); font-size: 14px; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .ref-section h3 { color: var(--fg); font-size: 13px; margin-top: 16px; margin-bottom: 8px; }
+  .ref-section p { color: var(--text-dim); font-size: 12px; max-width: 800px; margin-bottom: 8px; }
+  .ref-section ul { color: var(--text-dim); font-size: 12px; margin-left: 20px; }
+  .ref-section ul li { margin-bottom: 4px; }
+  .ref-section strong { color: var(--text); }
+</style>
+</head>
+<body>
+  <h1>Clawkin — Emblèmes statusline / 10 candidats</h1>
+  <div class="subtitle">Sprite emblème fixe (jamais changeant) · 4×4 px en Braille · 2 chars · 1 ligne · 2026-04-27</div>
+
+  <div class="legend">
+    <strong>Objectif</strong> : choisir l'emblème qui sera <em>the Clawkin emblem forever</em> dans toutes les statuslines.<br>
+    <strong>Contraintes</strong> : 4×4 pixels (16 dots), rendu en 2 caractères Unicode Braille, 1 ligne, couleur native du terminal.<br>
+    <strong>Top 3 recommandés</strong> par la deep research : <em>Pawprint</em> (lien direct "Claw"-kin), <em>Clawlet</em> (crabe-Invader fusion), <em>Watcher</em> (œil cyclop).<br>
+    <strong>À évaluer</strong> : (1) lisible en 4×4 ? (2) charge culturelle dev ? (3) original sans copier un trademark ? (4) digne d'être <em>l'emblème pour toujours</em> ?
+  </div>
+
+  <h2 class="section" style="color: var(--reco);">★ K — direct branding (claw-K-in)</h2>
+  <p style="color: var(--text-dim); font-size: 12px; margin-bottom: 16px; max-width: 800px;">L'évidence : la lettre K est dans Claw<strong style="color: var(--fg);">K</strong>in. Wordplay maximal, branding direct, personne ne l'a fait (Rust = 🦀, Go = 🐹, Java = ☕… aucun outil dev n'utilise sa propre initiale stylisée).</p>
+  <div class="grid" id="grid-k"></div>
+
+  <h2 class="section">Top 3 alternatives — pistes plus originales</h2>
+  <div class="grid" id="grid-top"></div>
+
+  <h2 class="section">Vague 2 — propositions originales (10 designs)</h2>
+  <div class="grid" id="grid-classic"></div>
+
+  <div class="ref-section">
+    <h2>Synthèse de la deep research — icônes dev iconiques 1975-2025</h2>
+
+    <h3>Survivants de la réduction radicale 4×4</h3>
+    <p>Top tier des silhouettes qui restent reconnaissables en 16 dots :</p>
+    <ul>
+      <li><strong>Space Invader</strong> (1978) — symétrie + antennes</li>
+      <li><strong>Fantôme Pac-Man</strong> (1980) — pyramide inversée + ourlet</li>
+      <li><strong>Slime Dragon Quest</strong> (1986) — goutte + 2 yeux</li>
+      <li><strong>Among Us crewmate</strong> (2018) — capsule + visière</li>
+      <li><strong>Tetris T-piece</strong> (1984) — géométrie pure</li>
+      <li><strong>Ferris Rust</strong> — crabe symétrique</li>
+      <li><strong>Tux Linux</strong> — pingouin ovale</li>
+      <li><strong>Kirby</strong> — cercle + 2 yeux + 2 pieds</li>
+    </ul>
+    <p><strong>Trait commun</strong> : forme géométrique de base + 1-2 features distinctives (yeux, antennes, ourlet).</p>
+
+    <h3>10 patterns universels qui marchent en 4×4</h3>
+    <ol style="color: var(--text-dim); font-size: 12px; margin-left: 20px;">
+      <li>Pyramide inversée + ourlet (fantôme)</li>
+      <li>Pyramide droite (vaisseau, ship)</li>
+      <li>Capsule + visière haute (Among Us, astronaute)</li>
+      <li>Goutte + 2 yeux (slime, junimo)</li>
+      <li>Crabe symétrique (Space Invader, Ferris)</li>
+      <li>Œil cyclope central (HAL 9000, Sauron)</li>
+      <li>Cœur/losange/diamant (Vim, Zelda rupee)</li>
+      <li>Tête + 2 oreilles pointues (chat, renard)</li>
+      <li><strong>Patte/griffe (claw)</strong> — pattern sous-exploité, parfait pour Clawkin</li>
+      <li>Symétrie + antennes (robot, tech lifeform)</li>
+    </ol>
+
+    <h3>À éviter</h3>
+    <ul>
+      <li>Among Us style — saturation 2020-2023</li>
+      <li>Ferris (Rust) — possessivité communautaire</li>
+      <li>Pac-Man fantôme — trademark Bandai Namco</li>
+      <li>Octocat GitHub — trademark</li>
+    </ul>
+
+    <p style="margin-top: 16px;"><strong style="color: var(--reco);">Le pattern le plus sous-exploité dans l'écosystème dev mascot</strong> : la patte/griffe (#9). Aucune mascotte majeure n'occupe ce territoire, et ça aligne parfaitement avec le naming "Clawkin".</p>
+  </div>
+
+  <script>
+    const gridToBraille = (g) => {
+      const dotMap = [
+        [0, 0, 1],   [1, 0, 2],   [2, 0, 4],   [3, 0, 64],
+        [0, 1, 8],   [1, 1, 16],  [2, 1, 32],  [3, 1, 128],
+      ];
+      let c1 = 0, c2 = 0;
+      dotMap.forEach(([r, c, v]) => { if (g[r][c]) c1 |= v; });
+      dotMap.forEach(([r, c, v]) => { if (g[r][c+2]) c2 |= v; });
+      return String.fromCodePoint(0x2800 + c1) + String.fromCodePoint(0x2800 + c2);
+    };
+
+    const candidates = [
+      // ============ K — DIRECT BRANDING ============
+      {
+        id: "K1",
+        name: "K",
+        ref: "K classique — uppercase",
+        desc: "La lettre K stylisée. Wordplay direct sur ClawKin. Lecture instantanée — tout dev reconnaît une lettre. Branding maximal.",
+        reco: true,
+        section: "k",
+        grid: [
+          [1,0,0,1],
+          [1,0,1,0],
+          [1,1,0,0],
+          [1,0,1,0]
+        ]
+      },
+      {
+        id: "K2",
+        name: "K bold",
+        ref: "K bolder — corps épais",
+        desc: "Variante plus pleine, plus de présence. Le pole est plus marqué, les arms plus prononcés. Pour un emblème qui se voit à coup d'œil.",
+        reco: true,
+        section: "k",
+        grid: [
+          [1,0,0,1],
+          [1,0,1,1],
+          [1,1,1,0],
+          [1,0,0,1]
+        ]
+      },
+      {
+        id: "K3",
+        name: "k",
+        ref: "k lowercase",
+        desc: "La même lettre en minuscule. Plus discret, plus humble — cohérent avec un pet qui « vit modestement » dans la statusline.",
+        reco: true,
+        section: "k",
+        grid: [
+          [1,0,0,0],
+          [1,0,1,0],
+          [1,1,0,0],
+          [1,0,1,0]
+        ]
+      },
+
+      // ============ TOP RECOMMENDED (alternatives) ============
+      {
+        id: "A",
+        name: "Pawprint",
+        ref: "patte / griffe — pattern sous-exploité",
+        desc: "Empreinte de patte. Lien direct au mot Clawkin. Aucune mascotte dev n'occupe ce territoire. Storytelling : « ton compagnon a laissé sa trace dans ton terminal ».",
+        reco: true,
+        section: "top",
+        grid: [
+          [1,0,1,0],
+          [0,1,0,1],
+          [0,1,1,0],
+          [1,1,1,1]
+        ]
+      },
+      {
+        id: "B",
+        name: "Watcher",
+        ref: "œil cyclop dans capsule",
+        desc: "« Ton pet observe le code avec toi ». Charge dev forte (les devs scrutent du code). Œil central + capsule + base.",
+        reco: true,
+        section: "top",
+        grid: [
+          [0,1,1,0],
+          [1,0,0,1],
+          [1,1,1,1],
+          [1,0,0,1]
+        ]
+      },
+      {
+        id: "C",
+        name: "Claw",
+        ref: "griffe seule recourbée — naming direct",
+        desc: "Une seule griffe recourbée. Wordplay le plus direct possible (Claw-kin). Pas de référence gaming = zéro déjà vu. Asymétrie diagonale qui suggère mouvement.",
+        reco: true,
+        section: "top",
+        grid: [
+          [1,0,0,0],
+          [1,1,0,0],
+          [0,1,1,0],
+          [0,0,1,1]
+        ]
+      },
+
+      // ============ VAGUE 2 — ORIGINALES ============
+      {
+        id: 1,
+        name: "Clawlet",
+        ref: "crabe + claw (mention déjà vu)",
+        desc: "Le candidat précédent. Retiré du top reco — sensation déjà vu signalée. Gardé ici pour comparaison avec les originaux.",
+        section: "wave2",
+        grid: [
+          [1,0,0,1],
+          [0,1,1,0],
+          [1,1,1,1],
+          [1,0,0,1]
+        ]
+      },
+      {
+        id: 2,
+        name: "Talon",
+        ref: "3 griffes verticales attachées",
+        desc: "Trois griffes parallèles attachées à une base. Vibe rapace, prédateur silencieux. Lecture verticale forte.",
+        section: "wave2",
+        grid: [
+          [1,0,1,0],
+          [1,0,1,0],
+          [1,0,1,0],
+          [1,1,1,1]
+        ]
+      },
+      {
+        id: 3,
+        name: "Glyph",
+        ref: "losange asymétrique / rune",
+        desc: "Symbole abstrait géométrique. Vibe rune / sigil dev. Asymétrie suggère un regard ou une personnalité.",
+        section: "wave2",
+        grid: [
+          [0,0,1,0],
+          [0,1,0,1],
+          [1,0,1,0],
+          [0,1,0,0]
+        ]
+      },
+      {
+        id: 4,
+        name: "Hatchling",
+        ref: "œuf fissuré",
+        desc: "Œuf avec fissure naissante. Storytelling onboarding : « tu viens de débloquer ta créature ». Charge cozy dev.",
+        section: "wave2",
+        grid: [
+          [0,1,1,0],
+          [1,0,1,1],
+          [1,1,0,1],
+          [0,1,1,0]
+        ]
+      },
+      {
+        id: 5,
+        name: "Sentinel",
+        ref: "petit gardien capsulé",
+        desc: "Capsule pointue + visière + base. Vibe gardien silencieux. Anthropomorphe minimal sans tomber dans le Among Us.",
+        section: "wave2",
+        grid: [
+          [0,1,1,0],
+          [1,1,1,1],
+          [1,0,0,1],
+          [0,1,1,0]
+        ]
+      },
+      {
+        id: 6,
+        name: "Helix",
+        ref: "double hélice / DNA dev",
+        desc: "Twist rotation. Charge sciences / data / structure dev. Lecture infinie / boucle.",
+        section: "wave2",
+        grid: [
+          [1,0,0,1],
+          [0,1,1,0],
+          [0,1,1,0],
+          [1,0,0,1]
+        ]
+      },
+      {
+        id: 7,
+        name: "Pulse",
+        ref: "onde / battement / heartbeat dev",
+        desc: "Pulsation visible. Vibe « ton pet vit, ton code vit ». Lecture symétrique zen.",
+        section: "wave2",
+        grid: [
+          [1,0,0,1],
+          [1,1,1,1],
+          [0,1,1,0],
+          [1,0,0,1]
+        ]
+      },
+      {
+        id: 8,
+        name: "Coil",
+        ref: "spirale / serpent enroulé",
+        desc: "Forme en S / spirale qui suggère mouvement contenu. Vibe mystique sans tomber dans le mystique kitsch.",
+        section: "wave2",
+        grid: [
+          [0,1,1,1],
+          [1,0,0,1],
+          [1,0,0,1],
+          [1,1,1,0]
+        ]
+      },
+      {
+        id: 9,
+        name: "Node",
+        ref: "point + connexions / réseau",
+        desc: "Damier asymétrique évoquant un nœud de réseau. Charge dev moderne (graph, network, data).",
+        section: "wave2",
+        grid: [
+          [1,0,1,0],
+          [0,1,0,1],
+          [1,0,1,0],
+          [0,1,0,1]
+        ]
+      },
+      {
+        id: 10,
+        name: "Squid",
+        ref: "calmar / petites tentacules",
+        desc: "Tête arrondie + tentacules ondulés. Vibe créature aquatique mystérieuse. Asymétrie des tentacules suggère mouvement.",
+        section: "wave2",
+        grid: [
+          [0,1,1,0],
+          [1,1,1,1],
+          [1,0,1,0],
+          [0,1,0,1]
+        ]
+      },
+      {
+        id: 11,
+        name: "Sprout",
+        ref: "graine qui germe",
+        desc: "Bourgeon naissant. Lien à l'évolution Clawkin. Vibe solarpunk / cozy.",
+        section: "wave2",
+        grid: [
+          [1,0,0,1],
+          [0,1,1,0],
+          [0,1,1,0],
+          [0,1,1,0]
+        ]
+      }
+    ];
+
+    const makePixGrid = (g, sz) => {
+      const el = document.createElement('div');
+      el.className = 'pixel-grid ' + sz;
+      g.forEach(row => row.forEach(v => {
+        const c = document.createElement('div');
+        if (v) c.className = 'on';
+        el.appendChild(c);
+      }));
+      return el;
+    };
+
+    const renderCard = (c) => {
+      const braille = gridToBraille(c.grid);
+      const card = document.createElement('div');
+      card.className = 'card' + (c.reco ? ' reco' : '');
+      card.innerHTML = `
+        <div class="card-id">candidat ${c.id}</div>
+        <div class="name">${c.name}</div>
+        <div class="ref-tag">${c.ref}</div>
+        <div class="desc">${c.desc}</div>
+        <div class="render-row">
+          <div class="render-block">
+            <div class="render-label">Braille terminal (18px)</div>
+            <div class="braille-render">${braille}</div>
+          </div>
+          <div class="render-block">
+            <div class="render-label">Pixel grid 8×</div>
+            <div class="pixel-placeholder"></div>
+          </div>
+        </div>
+        <div class="statusline-mock">
+          <span class="braille">${braille}</span> #001 Mole · L247 · 12w · 35% ctx
+        </div>
+      `;
+      const ph = card.querySelector('.pixel-placeholder');
+      ph.replaceWith(makePixGrid(c.grid, 's8'));
+      return card;
+    };
+
+    const gridK = document.getElementById('grid-k');
+    const gridTop = document.getElementById('grid-top');
+    const gridClassic = document.getElementById('grid-classic');
+    candidates.forEach(c => {
+      const card = renderCard(c);
+      if (c.section === "k") gridK.appendChild(card);
+      else if (c.section === "top") gridTop.appendChild(card);
+      else if (c.section === "wave2") gridClassic.appendChild(card);
+    });
+  </script>
+</body>
+</html>

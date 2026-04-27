@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Clawkin — Test des 5 stages d'évolution</title>
+<style>
+  :root {
+    --bg: #0a0e0a;
+    --fg: #4ade80;
+    --fg-dim: #22c55e;
+    --text: #a8b8a8;
+    --text-dim: #556555;
+    --card: #131913;
+    --border: #243224;
+    --accent: #fbbf24;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', 'JetBrains Mono', monospace;
+    padding: 48px 32px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  h1 {
+    color: var(--fg);
+    font-size: 20px;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .subtitle {
+    color: var(--text-dim);
+    margin-bottom: 32px;
+    font-size: 13px;
+  }
+  .legend {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 16px 20px;
+    margin-bottom: 32px;
+    font-size: 12px;
+    max-width: 900px;
+  }
+  .legend strong { color: var(--fg); }
+  .legend code { color: var(--accent); }
+
+  .creature-section {
+    margin-bottom: 64px;
+  }
+  .creature-header {
+    font-size: 16px;
+    color: var(--fg);
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .creature-subhead {
+    color: var(--text-dim);
+    font-size: 12px;
+    margin-bottom: 24px;
+  }
+  .stages-row {
+    display: flex;
+    gap: 24px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+  }
+  .stage-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 20px;
+    min-width: 180px;
+    text-align: center;
+  }
+  .stage-num {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 2px;
+  }
+  .stage-label {
+    color: var(--fg);
+    font-size: 14px;
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+  .stage-desc {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+    height: 28px;
+  }
+  .sprite-row {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .sprite-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .sprite-size-label {
+    font-size: 9px;
+    color: var(--text-dim);
+  }
+  .px {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: repeat(12, 1fr);
+  }
+  .px.s1 { width: 24px; height: 24px; }
+  .px.s4 { width: 72px; height: 72px; }
+  .px.s8 { width: 144px; height: 144px; }
+  .px div { background: transparent; }
+  .px div.on { background: var(--fg); }
+  .px.badge-style {
+    padding: 4px;
+    background: #0a0a0a;
+    border: 1px solid var(--border);
+    box-sizing: content-box;
+  }
+  .stats {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-top: 8px;
+  }
+  .stats .v { color: var(--text); }
+
+  .statusline-section {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+  }
+  .statusline-section h2 {
+    color: var(--fg);
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+  .status-row {
+    background: #000;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: inherit;
+  }
+  .status-row .label {
+    min-width: 120px;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+  .status-row .sprite-inline {
+    display: inline-grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: repeat(12, 1fr);
+    width: 24px;
+    height: 24px;
+  }
+  .status-row .sprite-inline div { background: transparent; }
+  .status-row .sprite-inline div.on { background: var(--fg); }
+  .status-row .text { color: var(--text); font-size: 13px; }
+</style>
+</head>
+<body>
+  <h1>Clawkin — Test règle A : 5 stages par accrétion de pixels</h1>
+  <div class="subtitle">Mole & Imp × 5 stages chacun — validation de la règle universelle · 2026-04-24</div>
+
+  <div class="legend">
+    <strong>Règle d'évolution testée</strong> (appliquée identiquement aux 250 futures silhouettes) :<br>
+    <code>Stage 1 — Seed</code> (~60% pixels de l'adulte) · silhouette ramassée, petite<br>
+    <code>Stage 2 — Jeune</code> (~80%) · croissance, proportions intermédiaires<br>
+    <code>Stage 3 — Adulte</code> (100%) · forme canonique complète (= ce qu'on voyait dans proto-01)<br>
+    <code>Stage 4 — Marqué</code> (~110%) · ajout d'une marque distinctive (cornes, accessoire, détail pixel)<br>
+    <code>Stage 5 — Apex</code> (~125%) · contour renforcé, forme maximale<br><br>
+    <strong>Ce qu'il faut juger</strong> : est-ce que la progression Stage 1 → Stage 5 est <em>lisible comme la même créature qui grandit</em> ? Est-ce que chaque stage est assez distinct du précédent pour valoir un palier ?
+  </div>
+
+  <div class="creature-section">
+    <div class="creature-header">#001 Mole — quadrupède</div>
+    <div class="creature-subhead">Évolution : du bébé rond → adulte pattu → apex imposant</div>
+    <div class="stages-row" id="mole-stages"></div>
+  </div>
+
+  <div class="creature-section">
+    <div class="creature-header">#002 Imp — bipède</div>
+    <div class="creature-subhead">Évolution : du bébé sans membres → adulte articulé → apex couronné</div>
+    <div class="stages-row" id="imp-stages"></div>
+  </div>
+
+  <div class="statusline-section">
+    <h2>Simulation statusline — progression visible dans le terminal</h2>
+    <p style="color: var(--text-dim); margin-bottom: 20px; font-size: 12px;">À quoi ça ressemblerait de voir son Mole évoluer au fil des semaines.</p>
+    <div id="statusline"></div>
+  </div>
+
+  <script>
+    const stageMetadata = [
+      { num: 1, label: "Seed", desc: "~60% · silhouette ramassée" },
+      { num: 2, label: "Jeune", desc: "~80% · proportions en cours" },
+      { num: 3, label: "Adulte", desc: "100% · forme canonique" },
+      { num: 4, label: "Marqué", desc: "~110% · marque distinctive" },
+      { num: 5, label: "Apex", desc: "~125% · contour renforcé" }
+    ];
+
+    const mole = {
+      name: "Mole",
+      stages: [
+        // Stage 1 — bébé rond
+        [
+          [0,0,0,0,0,0,0,0,0,0,0,0],
+          [0,0,0,0,0,0,0,0,0,0,0,0],
+          [0,0,0,0,0,0,0,0,0,0,0,0],
+          [0,0,0,0,1,1,1,1,0,0,0,0],
+          [0,0,0,1,1,1,1,1,1,0,0,0],
+          [0,0,1,1,1,1,1,1,1,1,0,0],
+          [0,0,1,1,1,1,1,1,1,1,0,0],
+          [0,0,0,1,1,1,1,1,1,0,0,0],
+          [0,0,0,0,1,1,1,1,0,0,0,0],
+          [0,0,0,0,0,0,0,0,0,0,0,0],
+          [0,0,0,0,0,0,0,0,0,0,0,0],
+          [0,0,0,0,0,0,0,0,0,0,0,0]
+        ],
+        // Stage 2 — jeune
+        [
+          [0,0,0,0,0,0,0,0,0,0,0,0],
+          [0,0,0,0,0,0,0,0,0,0,0,0],
+          [0,0,0,1,1,1,1,1,1,0,0,0],
+          [0,0,1,1,1,1,1,1,1,1,0,0],
+          [0,1,1,1,1,1,1,1,1,1,1,0],
+          [1,1,1,1,1,1,1,1,1,1,1,1],
+          [0,1,1,1,1,1,1,1,1,1,1,0],
+          [0,0,1,1,1,1,1,1,1,1,0,0],
+          [0,0,0,1,1,1,1,1,1,0,0,0],
+          [0,0,0,0,0,0,0,0,0,0,0,0],
+          [0,0,0,0,0,0,0,0,0,0,0,0],
+          [0,0,0,0,0,0,0,0,0,0,0,0]
+        ],
+        // Stage 3 — adulte (= proto-01)
+        [
+          [0,0,0,0,0,0,0,0,0,0,0,0],
+          [0,0,0,0,0,0,0,0,0,0,0,0],
+          [0,0,0,1,1,1,1,1,1,0,0,0],
+          [0,0,1,1,1,1,1,1,1,1,0,0],
+          [0,1,1,1,1,1,1,1,1,1,1,0],
+          [1,1,1,1,1,1,1,1,1,1,1,1],
+          [1,1,1,1,1,1,1,1,1,1,1,1],
+          [0,1,1,1,1,1,1,1,1,1,1,0],
+          [0,1,1,0,1,1,1,1,0,1,1,0],
+          [0,1,1,0,0,0,0,0,0,1,1,0],
+          [0,0,0,0,0,0,0,0,0,0,0,0],
+          [0,0,0,0,0,0,0,0,0,0,0,0]
+        ],
+        // Stage 4 — marqué (oreilles + pattes)
+        [
+          [0,0,0,0,0,0,0,0,0,0,0,0],
+          [0,0,0,1,1,0,0,1,1,0,0,0],
+          [0,0,0,1,1,1,1,1,1,0,0,0],
+          [0,0,1,1,1,1,1,1,1,1,0,0],
+          [0,1,1,1,1,1,1,1,1,1,1,0],
+          [1,1,1,1,1,1,1,1,1,1,1,1],
+          [1,1,1,1,1,1,1,1,1,1,1,1],
+          [0,1,1,1,1,1,1,1,1,1,1,0],
+          [0,1,1,0,1,1,1,1,0,1,1,0],
+          [0,1,1,0,0,0,0,0,0,1,1,0],
+          [0,0,0,0,0,0,0,0,0,0,0,0],
+          [0,0,0,0,0,0,0,0,0,0,0,0]
+        ],
+        // Stage 5 — apex (contour renforcé, taille max)
+        [
+          [0,0,0,0,0,0,0,0,0,0,0,0],
+          [0,0,0,1,1,0,0,1,1,0,0,0],
+          [0,0,1,1,1,1,1,1,1,1,0,0],
+          [0,1,1,1,1,1,1,1,1,1,1,0],
+          [1,1,1,1,1,1,1,1,1,1,1,1],
+          [1,1,1,1,1,1,1,1,1,1,1,1],
+          [1,1,1,1,1,1,1,1,1,1,1,1],
+          [1,1,1,1,1,1,1,1,1,1,1,1],
+          [0,1,1,1,1,1,1,1,1,1,1,0],
+          [0,1,1,0,1,1,1,1,0,1,1,0],
+          [1,1,1,0,0,0,0,0,0,1,1,1],
+          [0,0,0,0,0,0,0,0,0,0,0,0]
+        ]
+      ]
+    };
+
+    const imp = {
+      name: "Imp",
+      stages: [
+        // Stage 1 — bébé
+        [
+          [0,0,0,0,0,0,0,0,0,0,0,0],
+          [0,0,0,0,0,0,0,0,0,0,0,0],
+          [0,0,0,0,1,1,1,1,0,0,0,0],
+          [0,0,0,1,1,1,1,1,1,0,0,0],
+          [0,0,1,1,1,1,1,1,1,1,0,0],
+          [0,0,1,1,1,1,1,1,1,1,0,0],
+          [0,0,0,1,1,1,1,1,1,0,0,0],
+          [0,0,0,0,1,1,1,1,0,0,0,0],
+          [0,0,0,1,1,0,0,1,1,0,0,0],
+          [0,0,0,0,0,0,0,0,0,0,0,0],
+          [0,0,0,0,0,0,0,0,0,0,0,0],
+          [0,0,0,0,0,0,0,0,0,0,0,0]
+        ],
+        // Stage 2 — jeune
+        [
+          [0,0,0,0,0,0,0,0,0,0,0,0],
+          [0,0,0,0,1,1,1,1,0,0,0,0],
+          [0,0,0,1,1,1,1,1,1,0,0,0],
+          [0,0,0,0,1,1,1,1,0,0,0,0],
+          [0,0,1,1,1,1,1,1,1,1,0,0],
+          [0,1,1,1,1,1,1,1,1,1,1,0],
+          [0,0,0,1,1,1,1,1,1,0,0,0],
+          [0,0,0,1,1,0,0,1,1,0,0,0],
+          [0,0,1,1,0,0,0,0,1,1,0,0],
+          [0,0,0,0,0,0,0,0,0,0,0,0],
+          [0,0,0,0,0,0,0,0,0,0,0,0],
+          [0,0,0,0,0,0,0,0,0,0,0,0]
+        ],
+        // Stage 3 — adulte (= proto-01)
+        [
+          [0,0,0,0,0,0,0,0,0,0,0,0],
+          [0,0,0,0,1,1,1,1,0,0,0,0],
+          [0,0,0,1,1,1,1,1,1,0,0,0],
+          [0,0,0,0,1,1,1,1,0,0,0,0],
+          [0,0,1,1,1,1,1,1,1,1,0,0],
+          [0,1,1,1,1,1,1,1,1,1,1,0],
+          [0,1,1,1,1,1,1,1,1,1,1,0],
+          [0,0,0,1,1,1,1,1,1,0,0,0],
+          [0,0,0,1,1,0,0,1,1,0,0,0],
+          [0,0,1,1,0,0,0,0,1,1,0,0],
+          [0,0,1,1,0,0,0,0,1,1,0,0],
+          [0,1,1,0,0,0,0,0,0,1,1,0]
+        ],
+        // Stage 4 — marqué (cornes ajoutées)
+        [
+          [0,0,0,1,1,0,0,1,1,0,0,0],
+          [0,0,0,0,1,1,1,1,0,0,0,0],
+          [0,0,0,1,1,1,1,1,1,0,0,0],
+          [0,0,0,0,1,1,1,1,0,0,0,0],
+          [0,0,1,1,1,1,1,1,1,1,0,0],
+          [0,1,1,1,1,1,1,1,1,1,1,0],
+          [0,1,1,1,1,1,1,1,1,1,1,0],
+          [0,0,0,1,1,1,1,1,1,0,0,0],
+          [0,0,0,1,1,0,0,1,1,0,0,0],
+          [0,0,1,1,0,0,0,0,1,1,0,0],
+          [0,0,1,1,0,0,0,0,1,1,0,0],
+          [0,1,1,0,0,0,0,0,0,1,1,0]
+        ],
+        // Stage 5 — apex (couronne + membres renforcés)
+        [
+          [0,0,1,1,0,0,0,0,1,1,0,0],
+          [0,0,0,1,1,0,0,1,1,0,0,0],
+          [0,0,0,1,1,1,1,1,1,0,0,0],
+          [0,0,1,1,1,1,1,1,1,1,0,0],
+          [0,1,1,1,1,1,1,1,1,1,1,0],
+          [1,1,1,1,1,1,1,1,1,1,1,1],
+          [1,1,1,1,1,1,1,1,1,1,1,1],
+          [0,1,1,1,1,1,1,1,1,1,1,0],
+          [0,0,1,1,1,0,0,1,1,1,0,0],
+          [0,1,1,1,0,0,0,0,1,1,1,0],
+          [0,1,1,0,0,0,0,0,0,1,1,0],
+          [1,1,1,0,0,0,0,0,0,1,1,1]
+        ]
+      ]
+    };
+
+    const makePx = (spriteData, sizeClass) => {
+      const el = document.createElement('div');
+      el.className = 'px ' + sizeClass;
+      spriteData.forEach(row => row.forEach(v => {
+        const cell = document.createElement('div');
+        if (v) cell.className = 'on';
+        el.appendChild(cell);
+      }));
+      return el;
+    };
+
+    const density = (s) => s.flat().filter(v => v).length;
+
+    const renderStages = (container, creature) => {
+      const el = document.getElementById(container);
+      creature.stages.forEach((grid, idx) => {
+        const meta = stageMetadata[idx];
+        const adultDensity = density(creature.stages[2]);
+        const pct = Math.round(density(grid) / adultDensity * 100);
+        const card = document.createElement('div');
+        card.className = 'stage-card';
+        card.innerHTML = `
+          <div class="stage-num">Stage ${meta.num}</div>
+          <div class="stage-label">${meta.label}</div>
+          <div class="stage-desc">${meta.desc}</div>
+          <div class="sprite-row"></div>
+          <div class="sprite-row"></div>
+          <div class="stats">pixels: <span class="v">${density(grid)}/144</span> · vs adulte: <span class="v">${pct}%</span></div>
+        `;
+        const rows = card.querySelectorAll('.sprite-row');
+        rows[0].appendChild((() => { const w = document.createElement('div'); w.className = 'sprite-wrap'; w.innerHTML = '<div class="sprite-size-label">1x</div>'; w.appendChild(makePx(grid, 's1')); return w; })());
+        rows[0].appendChild((() => { const w = document.createElement('div'); w.className = 'sprite-wrap'; w.innerHTML = '<div class="sprite-size-label">4x (badge)</div>'; w.appendChild(makePx(grid, 's4 badge-style')); return w; })());
+        rows[1].appendChild((() => { const w = document.createElement('div'); w.className = 'sprite-wrap'; w.innerHTML = '<div class="sprite-size-label">8x</div>'; w.appendChild(makePx(grid, 's8')); return w; })());
+        el.appendChild(card);
+      });
+    };
+
+    renderStages('mole-stages', mole);
+    renderStages('imp-stages', imp);
+
+    // statusline simulation
+    const statusline = document.getElementById('statusline');
+    const weekLabels = ["Week 1 — new install", "Week 4 — first growth", "Week 20 — adult", "Month 8 — marked", "Year 1+ — apex"];
+    mole.stages.forEach((grid, idx) => {
+      const levels = [3, 18, 140, 480, 2400];
+      const streaks = [0, 3, 12, 28, 52];
+      const status = document.createElement('div');
+      status.className = 'status-row';
+      status.innerHTML = `<span class="label">${weekLabels[idx]}</span>`;
+      status.appendChild(makePx(grid, 's1'));
+      const txt = document.createElement('span');
+      txt.className = 'text';
+      txt.textContent = ` #001 Mole · L${levels[idx]} · ${streaks[idx]}w streak`;
+      status.appendChild(txt);
+      statusline.appendChild(status);
+    });
+  </script>
+</body>
+</html>

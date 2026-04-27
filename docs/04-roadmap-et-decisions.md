@@ -17,11 +17,12 @@
 | Nom + domaine | ✅ Verrouillé — Clawkin + clawkin.sh |
 | Positionnement | ✅ Verrouillé — awareness, pas helper |
 | Scope V1 | ✅ Verrouillé — lean : CLI Clawkin + badge README |
-| Landing page | ✅ Prête à ship — v1.11 finale |
+| Landing page | ✅ Migrée Astro + composants + Vercel Analytics (session 4, 2026-04-27) |
 | Architecture technique | ✅ Validée — zéro LLM, déterministe local |
 | Business model V1 | ✅ Freemium dès J1 — paid 9$/an débloque identité publique (cf [docs/06](06-freemium-et-plg.md)) |
 | Data collection comme asset | ✅ Pivot session 3 — dataset Claude Code agrégé = asset défendable (cf [docs/09](09-data-collection-et-rapports.md)) |
 | Formule d'évolution et endgame | ✅ Verrouillée session 3 — 6 signaux, courbe OSRS-like, Lignées + Apex + Zen, cadence annuelle de features (cf [docs/10](10-formule-et-progression.md)) |
+| Emblème statusline + surfaces visuelles | ✅ Verrouillé session 4 — emblème `k` lowercase Braille `⡧⡂` fixe en statusline, 250 silhouettes 12×12 réservées au badge GitHub + page profil (cf [docs/11](11-emblemes-et-surfaces.md)) |
 | Leaderboard | 🔄 Reclassé "optionnel, post-traction" — plus la clé de voûte du paid |
 | **Produit réel (CLI)** | ❌ Pas commencé |
 | **Générateur sprites (Q2)** | ❌ Pas entamé — plus gros risque technique |
@@ -111,8 +112,8 @@
    - ~1 semaine de dev solo supplémentaire, compatible avec la fenêtre 2-3 semaines
 
 6. **Landing déployée**
-   - Migration de `landing/v1.11` vers un projet Astro (idéalement) ou Next.js
-   - Déploiement Vercel sur clawkin.sh
+   - ✅ Migration vers Astro (session 4, 2026-04-27) — composants extraits, Vercel Analytics intégré, dev server `npm run dev`
+   - Déploiement Vercel sur clawkin.sh (auto-détecté depuis le push)
    - Connexion install script `clawkin.sh/install` → GitHub raw
 
 ### Phase 3 — Validation avant launch public
@@ -160,6 +161,32 @@ Questions nouvelles qui ont émergé en session 2 (cf [docs/06 section 12](06-fr
 
 ## Journal des grandes évolutions
 
+### Session 4 — 2026-04-27 (migration landing en code, première session prod)
+
+1. **Décision techno landing** : challenge sur Next.js, choix d'**Astro** comme meilleur fit (build statique, ship 0 JS par défaut, composants framework-agnostic, anti-overhead). Next reclassé "framework app, pas landing" — anti "IT-proof".
+2. **Migration `index.html` (550L) → projet Astro** :
+   - `BaseLayout.astro` : head, fonts, styles globaux, injection Vercel Analytics
+   - 7 composants extraits dans `src/components/` : Nav, Hero, InstallBar, DemoWindow, Badge, Pact, SiteFooter
+   - Script de typing/reveal extrait dans `src/scripts/landing.js`, bundlé via Astro
+   - `index.astro` final = 22 lignes (composants + import script)
+3. **Vercel Analytics intégré** via `@vercel/analytics` v2 + `inject()` dans le layout. Vérifié `window.va` chargée en preview.
+4. **Config dev server mise à jour** : `.claude/launch.json` passe de `npx serve landing` à `npm run dev` (Astro dev server port 3000). Build vérifié, preview vérifiée (typing + reveals + analytics OK).
+5. **Trigger de migration anticipé** : prévu Phase 2 #6 (post-CLI) dans roadmap initiale, advancé en session 4 pour préparer le terrain composants avant d'itérer sur design/animations futures.
+
+**Artefacts livrés en session 4** :
+- `src/layouts/BaseLayout.astro`, `src/pages/index.astro`, 7 composants `src/components/*.astro`
+- `src/scripts/landing.js` — script extrait de l'inline
+- `astro.config.mjs`, `tsconfig.json`, scripts npm `dev`/`build`/`preview`
+- `package.json` + `package-lock.json` (astro, @vercel/analytics)
+- Suppression de `index.html` racine (remplacé par build Astro vers `dist/`)
+- Update `.gitignore` (dist/, .astro/) et `.claude/launch.json`
+
+**Commit** : `d0c311e — landing: migre vers Astro + ajoute Vercel Analytics` (push sur main).
+
+**Prochain sujet à traiter** :
+- Vérifier que Vercel auto-détecte bien Astro au prochain deploy (sinon : Framework Preset → Astro dans settings)
+- Reprise des chantiers V1 produit (Phase 1 risques techniques, ou Q1 formule progression)
+
 ### Session 1 — 2026-04-21 (design stratégique, 0 code)
 
 1. **Import du brief** dans `docs/00-brief-base.md`, création du dossier `docs/`
@@ -188,6 +215,35 @@ Questions nouvelles qui ont émergé en session 2 (cf [docs/06 section 12](06-fr
 - `landing/v1-pure-terminal/` → `landing/v1.11-no-leaderboard/` — 11 itérations de landing
 - `landing/v2-amber-crt/`, `landing/v3-modern-dev/` — directions alternatives
 - `.claude/launch.json` — config dev server (`npx serve landing`)
+
+### Session 4 — 2026-04-27 (emblème statusline + séparation surfaces visuelles, 0 sprite final mais design verrouillé)
+
+1. **Migration landing v1.11 vers Astro** + composants extraits + Vercel Analytics intégré (commit `d0c311e`). Dev server `npm run dev` port 3000.
+2. **Production proto-01** : 10 silhouettes test 12×12 half-blocks (Mole, Imp, Moth, Coil, Slime, Krys, Jelly, Beetle, Ram, Mush). Validation visuelle de la direction esthétique par Edouard.
+3. **Test de la règle d'évolution 5 stages par accrétion de pixels** sur Mole + Imp. Stages 1-3-5 distincts visuellement, stages 2-4 trop subtils mais acceptable pour V1 launch (option A).
+4. **Production wave-01** : 30 silhouettes (10 originales + 20 nouvelles couvrant 10 familles : quadrupède, bipède, volant, rampant, amorphe, géométrique, marin, insectoïde, cornu, totem). Préparation pour 250 par vagues de 50.
+5. **Test critique en condition réelle** : activation du test-statusline.sh dans Claude Code via `~/.claude/settings.json`. Verdict d'Edouard sur le 12×12 6-lignes : "trop gros, inacceptable pour un dev". Pivot forcé.
+6. **9 itérations de format** testées en condition réelle terminal : half-blocks 6→4→2 lignes, full-blocks 4×2, Braille 4×4 1 ligne, couleurs ambre/vert/cyan/magenta toutes rejetées, position droite/gauche, K1/K3.
+7. **Découverte clé** : la statusline et le badge GitHub sont **deux surfaces distinctes avec deux fonctions distinctes**. Statusline = branding (1 emblème fixe), badge = identité publique (250 silhouettes différenciées). C'est plus cohérent, et résout le tradeoff "always visible" vs "non intrusif".
+8. **Génération de la galerie d'emblèmes** : 13 candidats au total (3 K-direct-branding + 3 originaux Pawprint/Watcher/Claw + 10 wave 2 propositions originales). Deep research parallèle sur les icônes dev iconiques 1975-2025 pour valider les références.
+9. **Choix final emblème** : `k` lowercase Braille = `⡧⡂`. Wordplay direct sur Claw**K**in. Aucun outil dev majeur n'utilise son initiale stylisée. Lowercase pour la cohérence culture CLI (`git`, `npm`, `cargo`, `go`).
+10. **Format statusline final verrouillé** : 1 ligne unique, sprite à gauche, couleur native du terminal user, info en gris dim : `⡧⡂ #001 Mole · L247 · 12w · 35% ctx`.
+11. **Implication produit** : les Silent milestones (sprites qui changent aux paliers L1000/2500/5000/10000) s'appliquent désormais au **badge GitHub** uniquement, pas à la statusline. Le k reste l'identité Clawkin permanente.
+
+**Artefacts livrés en session 4** :
+- `docs/11-emblemes-et-surfaces.md` — nouveau document, formalise le pivot et les deux surfaces
+- Update `docs/04-roadmap-et-decisions.md` — ce document
+- Update memory `project_pet_terminal.md` avec le pivot session 4
+- `sprites/proto-01/` — 10 silhouettes proto + test stages
+- `sprites/wave-01/` — 30 silhouettes (10 originales + 20 nouvelles)
+- `sprites/emblems/` — 13 candidats emblème statusline
+- `sprites/test-statusline.sh` — script statusline avec emblème k final
+- Migration landing Astro + Vercel Analytics (commit `d0c311e`)
+
+**À retenir pour les prochaines sessions** :
+- Statusline = `⡧⡂` (k lowercase Braille). Jamais changeant. Couleur native terminal.
+- Les 250 silhouettes 12×12 sont pour le badge/profil/cartes uniquement.
+- Le test en condition réelle est obligatoire avant tout lock de design (9 itérations sinon).
 
 ### Session 3 — 2026-04-23 (data comme asset stratégique, 0 code)
 
