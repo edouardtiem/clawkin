@@ -4,38 +4,39 @@
 
 ---
 
-## 🎯 Direction actuelle (2026-05-12) — Stratégie fusion Clawkin + Smart Routing
+## 🎯 Direction actuelle (2026-05-12) — Stratégie d'évolution Clawkin
 
-**La direction produit retenue est la stratégie fusion en 3 phases, documentée en [docs/16-merge-strategy.md](16-merge-strategy.md).**
+**La direction produit retenue est l'évolution de Clawkin en 3 features successives, documentée en [docs/16-merge-strategy.md](16-merge-strategy.md).**
 
-Clawkin n'est pas abandonné. Smart Routing devient l'**âme** du produit (utilité, savings, pricing récurrent 9€/mo). Clawkin reste la **face** (créature, virality, brand). Les deux s'intègrent dans un même produit livré en 3 phases.
+Clawkin reste un seul produit avec un seul brand. Sa première feature économise les tokens Claude Code des devs (utility + pricing récurrent 9€/mo). Les features suivantes ajoutent la créature visuelle, puis la dimension équipe. Pas de marque séparée, pas de produit parallèle.
 
-### Phases
+### Features (livrées dans cet ordre)
 
-1. **Phase 1 (sem 0-8)** — Ship Smart Routing pur. Foreman pattern (délégation Haiku via BYOK), dashboard savings, Stripe + money-back. Créature en latence. Cf [docs/14](14-smart-routing.md).
-2. **Phase 2 (mois 3-6 post-PMF)** — Réactivation de la créature comme layer visuel des savings. Level reflète discipline tokens, pas activité brute. Free tier rouvert pour la virality.
-3. **Phase 3 (mois 9-18)** — Team tier 12€/seat + team totem partagé + cross-IDE (Codex, Cursor).
+1. **Feature 1 — Token Routing (sem 0-8)** — Foreman pattern (délégation Haiku via BYOK), dashboard savings, Stripe + money-back. Aucune créature visible. Cf [docs/14](14-smart-routing.md) + [docs/17](17-feature-1-spec-detaillee.md).
+2. **Feature 2 — Créature visuelle (mois 3-6 post-PMF)** — Réactivation de la créature en statusline + badge GitHub + page profil. Levels reflètent les savings (*"L247 — $2,400 saved"*), pas l'activité brute. Free tier rouvert pour la virality.
+3. **Feature 3 — Team & cross-IDE (mois 9-18)** — Tier team 12€/seat + team totem partagé + extension Foreman pattern à Codex/Cursor.
 
 ### Statut
 
-- ✅ Stratégie de fusion verrouillée (cf docs/16)
-- ⏳ **Validation 1 semaine en attente** — protocole [docs/15](15-validation-plan-1-week.md) à lancer avant tout build Phase 1
-- ⏳ Decision meeting J+8 : 3/3 → ship Phase 1, 2/3 → ajuster, ≤1/3 → retour Clawkin pur
+- ✅ Stratégie d'évolution verrouillée (cf docs/16)
+- ⏳ **Validation 1 semaine en attente** — protocole [docs/15](15-validation-plan-1-week.md) à lancer avant tout build Feature 1
+- ⏳ Decision meeting J+8 : 3/3 → ship Feature 1, 2/3 → ajuster, ≤1/3 → retour Clawkin créature pur
 
 ### Documents de référence pour cette direction
 
 | Doc | Rôle |
 |---|---|
 | [docs/13-pivot-cost-firewall.md](13-pivot-cost-firewall.md) | Origine de la réflexion pivot — référence historique |
-| [docs/14-smart-routing.md](14-smart-routing.md) | Spec produit Phase 1 (Foreman pattern, pricing, archi) |
+| [docs/14-smart-routing.md](14-smart-routing.md) | Spec produit Feature 1 (vue produit) |
 | [docs/15-validation-plan-1-week.md](15-validation-plan-1-week.md) | Protocole de validation avant build |
 | [docs/16-merge-strategy.md](16-merge-strategy.md) | **Le doc d'ancrage stratégique** |
+| [docs/17-feature-1-spec-detaillee.md](17-feature-1-spec-detaillee.md) | Spec implementation Feature 1 (détaillée) |
 
 ### Statut des décisions Clawkin antérieures (docs 00-12)
 
-Les décisions documentées dans `docs/00` à `docs/12` (positionnement awareness, formule progression, emblème statusline, plan 250 silhouettes, etc.) **restent valides comme référence pour Phase 2 et Phase 3**. Elles ne sont pas annulées — elles sont mises en latence pendant Phase 1. Quand on réactive la créature en Phase 2, on s'appuie sur ces docs.
+Les décisions documentées dans `docs/00` à `docs/12` (positionnement awareness, formule progression, emblème statusline, plan 250 silhouettes, etc.) **restent valides comme référence pour Feature 2 et Feature 3**. Elles ne sont pas annulées — elles sont mises en latence pendant Feature 1. Quand on réactive la créature en Feature 2, on s'appuie sur ces docs.
 
-Le reste de ce document `docs/04` ci-dessous reflète l'état Clawkin pur d'avril 2026 et reste utile comme **historique** + base pour Phase 2.
+Le reste de ce document `docs/04` ci-dessous reflète l'état Clawkin pur d'avril 2026 et reste utile comme **historique** + base pour Feature 2.
 
 ---
 
