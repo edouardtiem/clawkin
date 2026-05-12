@@ -4,6 +4,41 @@
 
 ---
 
+## 🎯 Direction actuelle (2026-05-12) — Stratégie fusion Clawkin + Smart Routing
+
+**La direction produit retenue est la stratégie fusion en 3 phases, documentée en [docs/16-merge-strategy.md](16-merge-strategy.md).**
+
+Clawkin n'est pas abandonné. Smart Routing devient l'**âme** du produit (utilité, savings, pricing récurrent 9€/mo). Clawkin reste la **face** (créature, virality, brand). Les deux s'intègrent dans un même produit livré en 3 phases.
+
+### Phases
+
+1. **Phase 1 (sem 0-8)** — Ship Smart Routing pur. Foreman pattern (délégation Haiku via BYOK), dashboard savings, Stripe + money-back. Créature en latence. Cf [docs/14](14-smart-routing.md).
+2. **Phase 2 (mois 3-6 post-PMF)** — Réactivation de la créature comme layer visuel des savings. Level reflète discipline tokens, pas activité brute. Free tier rouvert pour la virality.
+3. **Phase 3 (mois 9-18)** — Team tier 12€/seat + team totem partagé + cross-IDE (Codex, Cursor).
+
+### Statut
+
+- ✅ Stratégie de fusion verrouillée (cf docs/16)
+- ⏳ **Validation 1 semaine en attente** — protocole [docs/15](15-validation-plan-1-week.md) à lancer avant tout build Phase 1
+- ⏳ Decision meeting J+8 : 3/3 → ship Phase 1, 2/3 → ajuster, ≤1/3 → retour Clawkin pur
+
+### Documents de référence pour cette direction
+
+| Doc | Rôle |
+|---|---|
+| [docs/13-pivot-cost-firewall.md](13-pivot-cost-firewall.md) | Origine de la réflexion pivot — référence historique |
+| [docs/14-smart-routing.md](14-smart-routing.md) | Spec produit Phase 1 (Foreman pattern, pricing, archi) |
+| [docs/15-validation-plan-1-week.md](15-validation-plan-1-week.md) | Protocole de validation avant build |
+| [docs/16-merge-strategy.md](16-merge-strategy.md) | **Le doc d'ancrage stratégique** |
+
+### Statut des décisions Clawkin antérieures (docs 00-12)
+
+Les décisions documentées dans `docs/00` à `docs/12` (positionnement awareness, formule progression, emblème statusline, plan 250 silhouettes, etc.) **restent valides comme référence pour Phase 2 et Phase 3**. Elles ne sont pas annulées — elles sont mises en latence pendant Phase 1. Quand on réactive la créature en Phase 2, on s'appuie sur ces docs.
+
+Le reste de ce document `docs/04` ci-dessous reflète l'état Clawkin pur d'avril 2026 et reste utile comme **historique** + base pour Phase 2.
+
+---
+
 ## État des lieux (2026-04-21)
 
 **Le projet existe en doc, pas en code.** Session de design stratégique du 21 avril 2026, zéro ligne de produit écrite.
@@ -161,6 +196,27 @@ Questions nouvelles qui ont émergé en session 2 (cf [docs/06 section 12](06-fr
 ---
 
 ## Journal des grandes évolutions
+
+### Session 5 — 2026-05-12 (pivot stratégique → fusion Clawkin + Smart Routing)
+
+1. **Constat de départ** : note de réflexion d'Edouard sur un potentiel pivot depuis Clawkin (créature awareness) vers un *"Claude Cost Firewall"* — produit qui bloque le dépassement de quota avec un hard cap local + push notif. Documenté dans [docs/13](13-pivot-cost-firewall.md).
+2. **Itération sur le concept** : challenge du Cost Firewall pur — *"trois hooks + une notif = un script, pas un SaaS"*. Exploration de plusieurs adjacents : Agent Watchdog, Verification layer, Audit ledger, Loom for Claude Code (session replay), Cost Attribution freelance, Context Janitor.
+3. **Convergence sur Smart Routing** : la seule option qui coche les 5 cases (pain viscérale + WTP claire + asymétrie Anthropic + simple-buildable + différenciation forte). Foreman pattern : déléguer le grunt work (large reads, bash bloat, audit tasks) à un worker Haiku via BYOK, le main thread Sonnet/Opus reste clean. Doc spec : [docs/14](14-smart-routing.md).
+4. **Pricing verrouillé** : flat 9€/mo + dashboard transparent + **money-back automatique** si savings < 2× subscription dans le mois. Marketing claim : *"Pay $9, save $40+, or it's free."*
+5. **Stress test des projections** : marché réel plus étroit qu'estimé initialement (Pro/Max users majoritaires ≠ API heavy users), ARPU réaliste ~7-8€ blended, plafond solo Y3 ~30-80k€ MRR. Risques principaux : Anthropic auto-trigger Task tool (50-60% à 18m), économies réelles < 20% en moyenne, qualité Haiku perçue.
+6. **Plan de validation 1 semaine** designé pour stop-or-go data-driven avant 6-10 sem de build : H1 patterns réels (parser JSONL), H2 50+ pre-orders Stripe (landing live), H3 audit roadmap Anthropic. Budget ~30€. Doc : [docs/15](15-validation-plan-1-week.md).
+7. **Décision majeure — stratégie fusion** : ne PAS abandonner Clawkin. Fusionner les deux produits en 3 phases. Phase 1 ship Smart Routing pur (savings = pricing récurrent), Phase 2 réactive la créature comme layer visuel des savings ("level 247 = $2,400 saved" plutôt que "89 jours actifs"), Phase 3 team tier + cross-IDE. Tous les assets Clawkin (sprites, emblems, brand, docs 00-12) sont gardés en latence pour Phase 2-3. Rien à jeter. Doc d'ancrage : [docs/16](16-merge-strategy.md).
+8. **Action externe attendue d'Edouard** : lancer la semaine de validation lundi prochain selon [docs/15](15-validation-plan-1-week.md). Decision meeting J+8 pour acter Phase 1 ou retour Clawkin pur.
+
+**Artefacts livrés en session 5** :
+- `docs/13-pivot-cost-firewall.md` — note de réflexion initiale (historique)
+- `docs/14-smart-routing.md` — spec produit Phase 1
+- `docs/15-validation-plan-1-week.md` — protocole validation pré-build
+- `docs/16-merge-strategy.md` — **stratégie d'ancrage 3 phases**
+- Update `docs/04-roadmap-et-decisions.md` — bloc "Direction actuelle" en haut + ce journal
+
+**Phrase d'ancrage** :
+> *Phase 1 prouve qu'on peut faire payer. Phase 2 prouve qu'on peut faire aimer. Phase 3 prouve qu'on peut faire scaler.*
 
 ### Session 4 — 2026-04-27 (migration landing en code, première session prod)
 
