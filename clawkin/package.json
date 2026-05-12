@@ -1,0 +1,13 @@
+{
+  "name": "clawkin-runtime",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "simulate": "node bin/simulate.mjs"
+  }
+}
