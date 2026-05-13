@@ -4,7 +4,6 @@ import { mkdtemp } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { routeBashPostTool, OUTCOMES } from '../lib/router.mjs';
-import { createMockDispatcher } from '../lib/haiku-dispatch.mjs';
 import { readState } from '../lib/state.mjs';
 
 function bigBash(lines) {
@@ -16,17 +15,15 @@ beforeEach(async () => {
   process.env.CLAWKIN_HOME = sandbox;
 });
 
-test('intercepts long clean bash and persists dispatch', async () => {
+test('intercepts long clean safe-command bash and persists dispatch', async () => {
   const result = await routeBashPostTool({
     tool_input: { command: 'npm install' },
     tool_response: { stdout: bigBash(400), stderr: '' },
-    apiKey: 'k',
-    dispatcher: createMockDispatcher({ summary: 'ok' }),
   });
-
   assert.equal(result.outcome, OUTCOMES.INTERCEPTED);
   assert.equal(result.decision.pattern, 'bash_truncate');
   assert.ok(result.dispatch.tokens_intercepted > result.dispatch.tokens_delivered);
+  assert.ok(result.dispatch.lines_removed > 0);
 
   const state = await readState();
   assert.equal(state.dispatches.length, 1);
@@ -35,43 +32,37 @@ test('intercepts long clean bash and persists dispatch', async () => {
 
 test('skips when output is short', async () => {
   const result = await routeBashPostTool({
-    tool_input: { command: 'ls' },
+    tool_input: { command: 'npm install' },
     tool_response: { stdout: bigBash(20), stderr: '' },
-    apiKey: 'k',
-    dispatcher: createMockDispatcher(),
   });
   assert.equal(result.outcome, OUTCOMES.SKIPPED);
+});
+
+test('skips when command is not in safe allowlist', async () => {
+  const result = await routeBashPostTool({
+    tool_input: { command: 'git log --oneline' },
+    tool_response: { stdout: bigBash(400), stderr: '' },
+  });
+  assert.equal(result.outcome, OUTCOMES.SKIPPED);
+  assert.equal(result.decision.reason, 'command_not_in_safe_allowlist');
 });
 
 test('skips when error markers in tail', async () => {
   const result = await routeBashPostTool({
     tool_input: { command: 'pytest' },
     tool_response: { stdout: bigBash(400) + '\nError: tests failed', stderr: '' },
-    apiKey: 'k',
-    dispatcher: createMockDispatcher(),
   });
   assert.equal(result.outcome, OUTCOMES.SKIPPED);
+  assert.equal(result.decision.reason, 'bash_output_contains_error_markers');
 });
 
-test('returns SKIPPED no_api_key when key missing and dispatcher would have run', async () => {
+test('does not persist when persist:false', async () => {
   const result = await routeBashPostTool({
     tool_input: { command: 'npm install' },
     tool_response: { stdout: bigBash(400), stderr: '' },
-    apiKey: null,
-    dispatcher: createMockDispatcher(),
+    persist: false,
   });
-  assert.equal(result.outcome, OUTCOMES.SKIPPED);
-  assert.equal(result.reason, 'no_api_key');
-});
-
-test('captures dispatcher errors as ERROR outcome', async () => {
-  const failing = async () => { throw new Error('boom'); };
-  const result = await routeBashPostTool({
-    tool_input: { command: 'npm install' },
-    tool_response: { stdout: bigBash(400), stderr: '' },
-    apiKey: 'k',
-    dispatcher: failing,
-  });
-  assert.equal(result.outcome, OUTCOMES.ERROR);
-  assert.match(result.error, /boom/);
+  assert.equal(result.outcome, OUTCOMES.INTERCEPTED);
+  const state = await readState();
+  assert.equal(state.dispatches.length, 0);
 });

@@ -8,31 +8,21 @@ test('estimateTokens uses 4 chars per token heuristic', () => {
   assert.equal(estimateTokens('abcde'), 2);
 });
 
-test('computeSavings produces positive net for large interception', () => {
-  const s = computeSavings({
-    raw_output_tokens: 5000,
-    delivered_tokens: 100,
-    haiku_input_tokens: 5200,
-    haiku_output_tokens: 100,
-  });
+test('computeSavings is gross (no Haiku cost) and positive on interception', () => {
+  const s = computeSavings({ raw_output_tokens: 5000, delivered_tokens: 100 });
   assert.equal(s.tokens_saved, 4900);
-  assert.ok(s.gross_usd > s.haiku_cost_usd, 'gross > haiku cost expected');
-  assert.ok(s.net_usd > 0);
-  assert.equal(s.savings_cents, Math.round(s.net_usd * 100));
+  assert.ok(s.gross_usd > 0);
+  assert.equal(s.net_usd, s.gross_usd);
+  assert.equal(s.savings_cents, Math.round(s.gross_usd * 100));
 });
 
-test('computeSavings can be negative if Haiku cost dwarfs gross', () => {
-  const s = computeSavings({
-    raw_output_tokens: 100,
-    delivered_tokens: 80,
-    haiku_input_tokens: 100_000,
-    haiku_output_tokens: 1000,
-  });
-  assert.ok(s.net_usd < 0);
+test('computeSavings returns 0 tokens_saved when delivered >= raw', () => {
+  const s = computeSavings({ raw_output_tokens: 100, delivered_tokens: 100 });
+  assert.equal(s.tokens_saved, 0);
+  assert.equal(s.gross_usd, 0);
+  assert.equal(s.savings_cents, 0);
 });
 
-test('pricing constants match spec section 7.1', () => {
+test('pricing constant matches Sonnet input price', () => {
   assert.equal(PRICING_USD_PER_MTOK.sonnet_input, 3.0);
-  assert.equal(PRICING_USD_PER_MTOK.haiku_input, 0.25);
-  assert.equal(PRICING_USD_PER_MTOK.haiku_output, 1.25);
 });

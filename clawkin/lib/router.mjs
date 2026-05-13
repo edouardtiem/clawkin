@@ -1,8 +1,7 @@
 import { classify } from './classifier.mjs';
-import { dispatchHaiku } from './haiku-dispatch.mjs';
+import { trimOutput } from './trim.mjs';
 import { computeSavings, estimateTokens } from './savings.mjs';
 import { recordDispatch, updateState } from './state.mjs';
-import { loadApiKey } from './key.mjs';
 
 export const OUTCOMES = {
   SKIPPED: 'skipped',
@@ -20,63 +19,33 @@ function extractBashOutput(toolResponse) {
 export async function routeBashPostTool({
   tool_input,
   tool_response,
-  apiKey,
-  dispatcher = dispatchHaiku,
   now = () => new Date(),
   persist = true,
+  trimOptions,
 }) {
   const command = tool_input?.command ?? '';
   const output = extractBashOutput(tool_response);
 
-  const decision = classify({ name: 'Bash', result: output });
+  const decision = classify({ name: 'Bash', command, result: output });
   if (!decision || decision.pattern !== 'bash_truncate') {
     return { outcome: OUTCOMES.SKIPPED, decision };
   }
 
   const lines = output.split('\n');
-  const key = apiKey ?? (await loadApiKey());
-  if (!key) {
-    return {
-      outcome: OUTCOMES.SKIPPED,
-      decision,
-      reason: 'no_api_key',
-    };
-  }
-
-  let result;
-  try {
-    result = await dispatcher({
-      pattern: 'bash_truncate',
-      vars: { command, n_lines: lines.length, output },
-      apiKey: key,
-    });
-  } catch (err) {
-    return {
-      outcome: OUTCOMES.ERROR,
-      decision,
-      error: err.message ?? String(err),
-    };
-  }
+  const trim = trimOutput(output, trimOptions);
 
   const raw_output_tokens = estimateTokens(output);
-  const delivered_tokens = estimateTokens(result.text);
-  const savings = computeSavings({
-    raw_output_tokens,
-    delivered_tokens,
-    haiku_input_tokens: result.usage.input_tokens,
-    haiku_output_tokens: result.usage.output_tokens,
-  });
+  const delivered_tokens = estimateTokens(trim.text);
+  const savings = computeSavings({ raw_output_tokens, delivered_tokens });
 
   const dispatch = {
     ts: now().toISOString(),
     pattern: 'bash_truncate',
     command: command.slice(0, 200),
     line_count: lines.length,
+    lines_removed: trim.removed,
     tokens_intercepted: raw_output_tokens,
     tokens_delivered: delivered_tokens,
-    tokens_haiku_input: result.usage.input_tokens,
-    tokens_haiku_output: result.usage.output_tokens,
-    haiku_latency_ms: result.latency_ms,
     savings_cents: savings.savings_cents,
   };
 
@@ -88,7 +57,7 @@ export async function routeBashPostTool({
     outcome: OUTCOMES.INTERCEPTED,
     decision,
     dispatch,
-    summary: result.text,
+    summary: trim.text,
     savings,
   };
 }
